@@ -46,7 +46,7 @@ hr {
   font-size: 18px;
   border: 1px solid rgb(94, 94, 94);
   border-radius: 10px;
-  margin: 10px;
+  margin: 5px;
   font-weight: bold;
   cursor: pointer;
   transition: 0.5s;
@@ -63,4 +63,8 @@ hr {
   border: 1px solid rgb(200, 200, 200);
   background-color: rgb(240, 240, 240);
   cursor: default;
+}
+
+i {
+  margin: 0 5px;
 }

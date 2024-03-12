@@ -3,6 +3,9 @@ header {
   color: white;
   padding: 10px 20px;
   text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 header h1 {

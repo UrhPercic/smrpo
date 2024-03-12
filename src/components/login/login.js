@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { getData } from "../../db/realtimeDatabase";
+import { useNavigate } from "react-router-dom";
 import "./login.css";
 
 const Login = () => {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState("");
+  const navigate = useNavigate();
 
   const fetchUsers = async () => {
     try {
@@ -30,6 +32,12 @@ const Login = () => {
     setSelectedUser(event.target.value);
   };
 
+  const handleLogin = () => {
+    if (selectedUser) {
+      navigate("/home", { state: { userId: selectedUser } });
+    }
+  };
+
   return (
     <div className="login">
       <h1>Login</h1>
@@ -44,7 +52,11 @@ const Login = () => {
           </option>
         ))}
       </select>
-      <button className="default-button" disabled={!selectedUser}>
+      <button
+        className="default-button"
+        onClick={handleLogin}
+        disabled={!selectedUser}
+      >
         Login
       </button>
     </div>
