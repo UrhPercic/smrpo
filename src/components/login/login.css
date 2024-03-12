@@ -1,0 +1,15 @@
+.login {
+  text-align: center;
+}
+
+.login select {
+  width: 60%;
+  margin: auto;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 10px;
+  font-size: 20px;
+  color: rgb(99, 99, 99);
+  background-color: white;
+  display: block;
+}

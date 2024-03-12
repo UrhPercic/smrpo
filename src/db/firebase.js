@@ -9,6 +9,8 @@ const firebaseConfig = {
   messagingSenderId: "813347671451",
   appId: "1:813347671451:web:90f2ac07b09cd372ca653e",
   measurementId: "G-ZSZ68QPNX7",
+  databaseURL:
+    "https://smrpo-acd88-default-rtdb.europe-west1.firebasedatabase.app/",
 };
 
 const app = initializeApp(firebaseConfig);
