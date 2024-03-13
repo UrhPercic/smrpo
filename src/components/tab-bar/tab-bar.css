@@ -1,0 +1,11 @@
+.app-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.active-button {
+  color: white;
+  border: 1px solid #4caf50;
+  background-color: #4caf50;
+}

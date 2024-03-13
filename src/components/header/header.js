@@ -11,6 +11,14 @@ const Header = () => {
         return "Login";
       case "/home":
         return "Home";
+      case "/add-project":
+        return "Add project";
+      case "/user-profile":
+        return "User profile";
+      case "/add-user":
+        return "Add user";
+      case "/planning-poker":
+        return "Planning poker";
     }
   };
 

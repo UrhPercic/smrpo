@@ -34,6 +34,7 @@ const Login = () => {
 
   const handleLogin = () => {
     if (selectedUser) {
+      localStorage.setItem("userId", selectedUser);
       navigate("/home", { state: { userId: selectedUser } });
     }
   };
