@@ -59,8 +59,8 @@ const AddUser = () => {
   };
 
   return isAdmin ? (
-    <div className="add-user-container">
-      <div className="add-user">
+    <div className="container">
+      <div className="content">
         <form onSubmit={handleSubmit}>
           <input type="text" name="username" placeholder="Username" required />
           <input

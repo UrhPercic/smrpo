@@ -68,3 +68,16 @@ hr {
 i {
   margin: 0 5px;
 }
+
+.container {
+  background-color: white;
+  border-radius: 10px;
+}
+
+.content {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  width: 90%;
+}

@@ -10,6 +10,7 @@ import UserProfile from "./components/user-profile/user-profile";
 import AddUser from "./components/add-user/add-user";
 import Layout from "./layout";
 import PlanningPoker from "./components/planning-poker/planning-poker";
+import Project from "./components/project/project";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
               <Route path="add-user" element={<AddUser />} exact />
               <Route path="user-profile" element={<UserProfile />} exact />
               <Route path="planning-poker" element={<PlanningPoker />} exact />
+              <Route path="/project/:projectId" element={<Project />} />
             </Route>
           </Routes>
         </div>

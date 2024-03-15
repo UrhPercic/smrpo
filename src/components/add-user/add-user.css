@@ -1,26 +1,12 @@
-.add-user-container {
-  background-color: white;
-  border-radius: 10px;
-}
-
-.add-user {
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 0 auto;
-  width: 80%;
-}
-
-.add-user form {
+.content form {
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
 }
 
-.add-user input,
-.add-user select {
+.content input,
+.content select {
   width: 90%;
   margin-bottom: 10px;
   padding: 5px 10px;
@@ -29,7 +15,7 @@
   border: 1px solid #ccc;
 }
 
-.add-user select {
+.content select {
   color: rgb(99, 99, 99);
   background-color: white;
 }

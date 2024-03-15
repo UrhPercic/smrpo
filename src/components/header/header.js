@@ -6,6 +6,9 @@ const Header = () => {
   const location = useLocation();
 
   const getTitle = (pathname) => {
+    if (pathname.startsWith("/project/")) {
+      return "Project";
+    }
     switch (pathname) {
       case "/":
         return "Login";
@@ -19,6 +22,8 @@ const Header = () => {
         return "Add user";
       case "/planning-poker":
         return "Planning poker";
+      default:
+        return "SMRPO";
     }
   };
 
