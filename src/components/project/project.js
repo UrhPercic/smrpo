@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+
 import { getData } from "../../db/realtimeDatabase";
 import "./project.css";
 
 const Project = () => {
   const { projectId } = useParams();
+  const navigate = useNavigate(); // Use useNavigate hook for navigation
   const [project, setProject] = useState(null);
 
   useEffect(() => {
@@ -18,7 +20,10 @@ const Project = () => {
     fetchProject();
   }, [projectId]);
 
-  const handleSubmit = async (event) => {};
+  // Navigate to the edit project page
+  const handleEdit = () => {
+    navigate(`/projects/edit/${projectId}`); // Use navigate function for routing
+  };
 
   return (
     <div className="container">
@@ -26,19 +31,10 @@ const Project = () => {
         {project && (
           <>
             <h1>{project.name}</h1>
-            <p>Describtion: {project.description}</p>
+            <p>Description: {project.description}</p>
+            <button onClick={handleEdit} className="default-button">Edit Project</button> {/* Edit button */}
           </>
         )}
-        <div className="add-task">
-          <form onSubmit={handleSubmit}>
-            <input type="text" name="name" placeholder="Name" required />
-            <input type="text" name="surname" placeholder="Surname" required />
-            <input type="text" name="email" placeholder="Email" required />
-            <button className="default-button" type="submit">
-              Add task
-            </button>
-          </form>
-        </div>
       </div>
     </div>
   );

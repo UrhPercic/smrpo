@@ -44,6 +44,26 @@ app.post('/api/projects/create', async (req, res) => {
   }
 });
 
+// Assuming Express and Firebase Admin are already set up
+app.post('/api/projects/update/:projectId', async (req, res) => {
+  const { projectId } = req.params;
+  const { name, description, users } = req.body; // Destructure the expected fields from the request body
+
+  try {
+    // Path to the specific project in Firebase Realtime Database
+    const projectRef = admin.database().ref(`projects/${projectId}`);
+
+    // Update the project details. Firebase automatically handles adding new members,
+    // updating existing ones, and removing those not included in the 'users' array.
+    await projectRef.update({ name, description, users });
+
+    res.status(200).json({ message: 'Project updated successfully' });
+  } catch (error) {
+    console.error('Error updating project:', error);
+    res.status(500).json({ error: 'An error occurred while updating the project' });
+  }
+});
+
 
 
 // Route to fetch all users
@@ -64,6 +84,23 @@ app.get('/api/users', async (req, res) => {
   }
 });
 
+app.get('/api/projects/:projectId', async (req, res) => {
+  const projectId = req.params.projectId;
+
+  try {
+    const projectRef = admin.database().ref(`projects/${projectId}`);
+    projectRef.once('value', snapshot => {
+      if (snapshot.exists()) {
+        res.status(200).json(snapshot.val());
+      } else {
+        res.status(404).send('Project not found');
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching project:', error);
+    res.status(500).json({ error: 'An error occurred while fetching the project' });
+  }
+});
 
 
 // Start the server

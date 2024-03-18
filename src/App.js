@@ -11,6 +11,8 @@ import AddUser from "./components/add-user/add-user";
 import Layout from "./layout";
 import PlanningPoker from "./components/planning-poker/planning-poker";
 import Project from "./components/project/project";
+import ProjectEditForm from './components/project/ProjectEditForm';
+
 
 function App() {
   return (
@@ -27,6 +29,7 @@ function App() {
               <Route path="user-profile" element={<UserProfile />} exact />
               <Route path="planning-poker" element={<PlanningPoker />} exact />
               <Route path="/project/:projectId" element={<Project />} />
+              <Route path="/projects/edit/:projectId" element={<ProjectEditForm />} /> 
             </Route>
           </Routes>
         </div>
