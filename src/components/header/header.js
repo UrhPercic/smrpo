@@ -9,19 +9,26 @@ const Header = () => {
     if (pathname.startsWith("/project/")) {
       return "Project";
     }
+    if (pathname.startsWith("/projects/edit/")) {
+      return "Edit Project";
+    }
+    if (pathname.startsWith("/projects/add-task/")) {
+      return "Add task to project";
+    }
+
     switch (pathname) {
       case "/":
         return "Login";
       case "/home":
         return "Home";
       case "/add-project":
-        return "Add project";
+        return "Add Project";
       case "/user-profile":
-        return "User profile";
+        return "User Profile";
       case "/add-user":
-        return "Add user";
+        return "Add User";
       case "/planning-poker":
-        return "Planning poker";
+        return "Planning Poker";
       default:
         return "SMRPO";
     }

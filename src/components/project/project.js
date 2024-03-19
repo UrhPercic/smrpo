@@ -20,9 +20,12 @@ const Project = () => {
     fetchProject();
   }, [projectId]);
 
-  // Navigate to the edit project page
   const handleEdit = () => {
-    navigate(`/projects/edit/${projectId}`); // Use navigate function for routing
+    navigate(`/projects/edit/${projectId}`);
+  };
+
+  const handleAddTask = () => {
+    navigate(`/projects/add-task/${projectId}`);
   };
 
   return (
@@ -30,9 +33,20 @@ const Project = () => {
       <div className="content">
         {project && (
           <>
-            <h1>{project.name}</h1>
+            <div className="project-header">
+              <h1>{project.name}</h1>
+              <div>
+                <button onClick={handleEdit} className="default-button">
+                  Edit Project
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button onClick={handleAddTask} className="default-button">
+                  Add task
+                  <i class="fa-solid fa-list-check"></i>
+                </button>
+              </div>
+            </div>
             <p>Description: {project.description}</p>
-            <button onClick={handleEdit} className="default-button">Edit Project</button> {/* Edit button */}
           </>
         )}
       </div>
