@@ -191,6 +191,44 @@ app.get('/api/sprints/:projectId', async (req, res) => {
 });
 
 
+app.get('/api/sprints', async (req, res) => {
+  try {
+    const usersRef = admin.database().ref('sprints');
+    usersRef.once('value', (snapshot) => {
+      const users = snapshot.val();
+      const usersArray = Object.keys(users).map(key => ({
+        id: key,
+        ...users[key]
+      }));
+      res.json(usersArray);
+    });
+  } catch (error) {
+    console.error('Error fetching sprints:', error);
+    res.status(500).json({ error: 'An error occurred while fetching the users' });
+  }
+});
+
+// Route for creating a new sprint
+app.post('/api/sprints/updateData', async (req, res) => {
+  try {
+    const { sprintId, sprintName, startTime, endTime, velocity } = req.body;
+    
+    const updateData = {
+      sprintName,
+      startTime,
+      endTime,
+      velocity,
+    };
+    //await admin.database().ref('users').update(updateData);
+    await admin.database().ref(`sprints/${sprintId}`).update(updateData);
+    res.status(200).json({ message: 'User profile updated successfully!'});
+  } catch (error) {
+    console.error('Error updating user data:', error);
+    res.status(500).json({ error: 'An error occurred while updating user data!' });
+  }
+});
+
+
 // Start the server
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {

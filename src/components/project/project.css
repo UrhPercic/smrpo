@@ -22,15 +22,34 @@
 }
 
 .progress-bar-container {
-  width: 100%;
   height: 10px;
   background-color: #f0f0f0;
   border-radius: 5px;
   margin-top: 10px;
+  margin-bottom: 20px;
 }
 
 .progress-bar {
   height: 100%;
   background-color: green;
   border-radius: 5px;
+}
+
+.edit-sprint-button {
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.edit-sprint-button a {
+  padding: 5px 10px;
+  background-color: #4d4d4d;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  
+}
+
+.edit-sprint-button a:hover {
+  background-color: #8d8d8d;
 }

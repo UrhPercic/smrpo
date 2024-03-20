@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 
 import { getData } from "../../db/realtimeDatabase";
 import "./project.css";
@@ -110,7 +110,11 @@ const Project = () => {
                   <div className="progress-bar-container">
                     <div className="progress-bar" style={{ width: `${progress}%` }}></div>
                   </div>
+                  <div className="edit-sprint-button">
+                    <Link to={`/projects/edit-sprint/${sprint.id}`}>Edit Sprint</Link>
+                  </div>
                 </div>
+                
                 )
               }
             )}

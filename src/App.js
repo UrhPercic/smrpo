@@ -13,8 +13,9 @@ import PlanningPoker from "./components/planning-poker/planning-poker";
 import Project from "./components/project/project";
 import ProjectEditForm from "./components/project/ProjectEditForm";
 import AddTask from "./components/project/add-task";
-import AddSprint from "./components/project/add-sprint";
+import AddSprint from "./components/project/sprints/add-sprint";
 import EditProfile from "./components/user-profile/edit-profile";
+import EditSprint from "./components/project/sprints/edit-sprint";
 
 function App() {
   return (
@@ -46,6 +47,10 @@ function App() {
               <Route
                 path="/projects/add-sprint/:projectId"
                 element={<AddSprint />}
+              />
+              <Route
+                path="/projects/edit-sprint/:sprintId"
+                element={<EditSprint />}
               />
             </Route>
           </Routes>
