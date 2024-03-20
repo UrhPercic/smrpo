@@ -64,7 +64,23 @@ app.post('/api/projects/update/:projectId', async (req, res) => {
   }
 });
 
-
+// Route to fetch all projects
+app.get('/api/projects', async (req, res) => {
+  try {
+    const projectsRef = admin.database().ref('projects');
+    projectsRef.once('value', (snapshot) => {
+      const projects = snapshot.val();
+      const projectsArray = Object.keys(projects).map(key => ({
+        id: key,
+        ...projects[key]
+      }));
+      res.json(projectsArray);
+    });
+  } catch (error) {
+    console.error('Error fetching projects:', error);
+    res.status(500).json({ error: 'An error occurred while fetching the projects' });
+  }
+});
 
 // Route to fetch all users
 app.get('/api/users', async (req, res) => {
@@ -99,6 +115,57 @@ app.get('/api/projects/:projectId', async (req, res) => {
   } catch (error) {
     console.error('Error fetching project:', error);
     res.status(500).json({ error: 'An error occurred while fetching the project' });
+  }
+});
+
+// Route for creating a new sprint
+app.post('/api/projects/createSprint', async (req, res) => {
+  try {
+    const { sprintName, projectId, startTime, endTime, velocity } = req.body;
+    
+    const sprintData = {
+      sprintName,
+      projectId,
+      startTime,
+      endTime,
+      velocity,
+      created_at: new Date().toISOString(),
+    };
+
+    const newSprintRef = await admin.database().ref('sprints').push(sprintData);
+    
+    res.status(200).json({ message: 'Sprint created successfully', sprintId: newSprintRef.key });
+  } catch (error) {
+    console.error('Error creating sprint:', error);
+    res.status(500).json({ error: 'An error occurred while creating the sprint' });
+  }
+});
+
+
+// Route to fetch sprints by project ID
+app.get('/api/sprints/:projectId', async (req, res) => {
+  try {
+    const projectId = req.params.projectId;
+    const sprintsRef = admin.database().ref('sprints');
+    
+    // Query sprints by project ID
+    const query = sprintsRef.orderByChild('projectId').equalTo(projectId);
+
+    query.once('value', (snapshot) => {
+      const sprints = snapshot.val();
+      if (!sprints) {
+        return res.json([]); // Return an empty array if no sprints found
+      }
+      
+      const sprintsArray = Object.keys(sprints).map(key => ({
+        id: key,
+        ...sprints[key]
+      }));
+      res.json(sprintsArray);
+    });
+  } catch (error) {
+    console.error('Error fetching sprints:', error);
+    res.status(500).json({ error: 'An error occurred while fetching the sprints' });
   }
 });
 

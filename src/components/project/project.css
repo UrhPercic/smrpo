@@ -9,3 +9,28 @@
   justify-content: space-between;
   align-items: center;
 }
+
+.sprint-section {
+  border: 2px solid #ccc;
+  border-radius: 15px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.sprint-section h3 {
+  margin-top: 0;
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 10px;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: green;
+  border-radius: 5px;
+}
