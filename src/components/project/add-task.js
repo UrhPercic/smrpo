@@ -12,13 +12,10 @@ const AddTask = () => {
     projected_time: "", //predviden cas, user inputs?
     user_story_id: "", //ni se u bzis kip
     created_at: "", //local tim
+    responsible_user_id: localStorage.getItem("userId"), // Get current user ID
   });
 
-  
-  const currentUserId = localStorage.getItem("userId");
-
   useEffect(() => {
-    
     const currentDateTime = new Date().toISOString();
     setTaskData((prevData) => ({
       ...prevData,
@@ -35,12 +32,10 @@ const AddTask = () => {
     event.preventDefault();
 
     try {
-      
       await addData(`/tasks`, taskData); 
       navigate(`/projects/${projectId}`);
     } catch (error) {
       console.error("woops:", error);
-      
     }
   };
 
@@ -48,7 +43,6 @@ const AddTask = () => {
     <div className="container">
       <div className="content">
         <form onSubmit={handleSubmit}>
-          {}
           <div className="form-group">
             <label htmlFor="name">Name:</label>
             <input
@@ -82,7 +76,7 @@ const AddTask = () => {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="user_story_id">User Story ID, ker ga se ni u bazi lol:</label>
+            <label htmlFor="user_story_id">User Story ID:</label>
             <input
               type="text"
               name="user_story_id"
