@@ -141,6 +141,27 @@ app.post('/api/projects/createSprint', async (req, res) => {
   }
 });
 
+// Route for creating a new sprint
+app.post('/api/users/updateData', async (req, res) => {
+  try {
+    const { userID, name, surname, username, email } = req.body;
+    
+    const updateData = {
+      name,
+      surname,
+      username,
+      email,
+    };
+
+    //await admin.database().ref('users').update(updateData);
+    await admin.database().ref(`users/${userID}`).update(updateData);
+    res.status(200).json({ message: 'User profile updated successfully!'});
+  } catch (error) {
+    console.error('Error updating user data:', error);
+    res.status(500).json({ error: 'An error occurred while updating user data!' });
+  }
+});
+
 
 // Route to fetch sprints by project ID
 app.get('/api/sprints/:projectId', async (req, res) => {
