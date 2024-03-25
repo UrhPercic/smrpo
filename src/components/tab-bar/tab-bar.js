@@ -67,6 +67,17 @@ const TabBar = () => {
             <i className="fa-solid fa-plus"></i>
           </button>
         )}
+        {userDetails?.privilege === "admin" && (
+          <button
+            className={`default-button ${
+              isActive("/users") ? "active-button" : ""
+            }`}
+            onClick={() => handleNavigationClick("/users")}
+          >
+            <strong>Users</strong>
+            <i className="fas fa-user"></i>
+          </button>
+        )}
         <button
           className={`default-button ${
             isActive("/user-profile") ? "active-button" : ""

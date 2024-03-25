@@ -16,6 +16,7 @@ import AddTask from "./components/project/add-task";
 import AddSprint from "./components/project/sprints/add-sprint";
 import EditProfile from "./components/user-profile/edit-profile";
 import EditSprint from "./components/project/sprints/edit-sprint";
+import Users from "./components/users/users";
 
 function App() {
   return (
@@ -30,11 +31,9 @@ function App() {
               <Route path="add-project" element={<AddProject />} exact />
               <Route path="add-user" element={<AddUser />} exact />
               <Route path="user-profile" element={<UserProfile />} exact />
-              <Route
-                path="/user-profile/edit"
-                element={<EditProfile />}
-              />
+              <Route path="/user-profile/edit" element={<EditProfile />} />
               <Route path="planning-poker" element={<PlanningPoker />} exact />
+              <Route path="users" element={<Users />} exact />
               <Route path="/project/:projectId" element={<Project />} />
               <Route
                 path="/projects/edit/:projectId"

@@ -1,0 +1,19 @@
+.users {
+  overflow-y: auto;
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: rgb(219, 219, 219);
+  padding: 10px;
+  border-radius: 10px;
+  margin: 5px;
+  cursor: pointer;
+  transition: 0.5s;
+}
+
+.user:hover {
+  background-color: rgb(190, 190, 190);
+}

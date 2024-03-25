@@ -29,6 +29,10 @@ const Header = () => {
         return "Add User";
       case "/planning-poker":
         return "Planning Poker";
+      case "/users":
+        return "Users";
+      case "/user-profile/edit":
+        return "Edit profile";
       default:
         return "SMRPO";
     }
