@@ -40,6 +40,10 @@ const Project = () => {
   const handleAddSprint = () => {
     navigate(`/projects/add-sprint/${projectId}`);
   };
+  const handleAddUserStory = () => {
+    navigate(`/projects/add-userStory/${projectId}`);
+  };
+
 
   const formatDateTime = (dateTimeString) => {
     const dateTime = new Date(dateTimeString);
@@ -66,6 +70,10 @@ const Project = () => {
                 <button onClick={handleEdit} className="default-button">
                   Edit Project
                   <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button onClick={handleAddUserStory} className="default-button">
+                  Add Story
+                  <i className="fa-solid fa-book"></i>
                 </button>
                 <button onClick={handleAddTask} className="default-button">
                   Add task

@@ -1,0 +1,60 @@
+
+.add-button {
+    color: white;
+    background-color: #2878a9;
+    border-color: #2878a9;
+    margin-right: 20px;
+}
+.button-wrapper {
+    clear: both;
+    display: block;
+    text-align: center;
+}
+
+.child {
+    display: inline-block;
+    padding: 1rem 1rem;
+    vertical-align: middle;
+}
+.form-group .form-control {
+    width: 40%;
+    margin: auto;
+    box-sizing: border-box;
+    display: block;
+}
+
+
+.delete-button {
+    color: white;
+    background-color: #D11A2A ;
+    border-color: #D11A2A ;
+}
+.card {
+    margin: 1rem;
+    padding: 2rem 2rem;
+    text-align: center;
+}
+
+.add-button:hover {
+    color: white;
+    background-color: #3498db;
+    border-color: #3498db;
+}
+.delete-button:hover {
+    color: white;
+    background-color: #A10D22;
+    border-color: #A10D22;
+}
+.pretty-dropdown {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: white;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.3s ease-in-out;
+}
+
+.pretty-dropdown:hover {
+    border-color: #007bff;
+}
+

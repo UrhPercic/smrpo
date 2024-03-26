@@ -1,68 +1,67 @@
-html,
-body,
-#root,
-.App {
+html, body, #root, .App {
   height: 100%;
   margin: 0;
   padding: 0;
   width: 100%;
+  box-sizing: border-box;
 }
 
 body {
-  background-color: rgb(246, 234, 234);
+  background-color: #f4f4f4;
   margin: 0;
+  font-family: "Open Sans", sans-serif;
+  color: #333;
 }
 
 .App {
-  font-family: "Open Sans", sans-serif;
-  height: 100%;
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 .app-content {
   flex-grow: 1;
-  background-color: rgb(218, 218, 208);
-  margin: 10px;
+  background-color: #ffffff;
+  margin: 20px;
   border-radius: 10px;
-  padding: 10px;
+  padding: 20px;
   overflow: auto;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .app-content h1 {
   font-size: 30px;
-  color: rgb(94, 94, 94);
+  color: #2c3e50;
+  margin-bottom: 20px;
 }
 
 hr {
-  border-color: rgb(172, 172, 172);
-  border-style: solid;
+  border-color: #eaecef;
 }
 
 .default-button {
-  color: rgb(94, 94, 94);
-  padding: 5px 20px;
-  background-color: white;
-  font-size: 18px;
-  border: 1px solid rgb(94, 94, 94);
-  border-radius: 10px;
-  margin: 5px;
-  font-weight: bold;
+  color: #2c3e50;
+  padding: 10px 25px;
+  background-color: #ffffff;
+  font-size: 16px;
+  border: 2px  #2c3e50;
+  border-radius: 5px;
+  margin: 10px 5px;
+  font-weight: 600;
   cursor: pointer;
-  transition: 0.5s;
+  transition: all 0.3s ease;
 }
 
 .default-button:hover {
-  color: white;
-  border: 1px solid #4caf50;
-  background-color: #4caf50;
+  color: #ffffff;
+  background-color: #3498db;
+  border-color: #3498db;
 }
 
 .default-button:disabled {
-  color: rgb(150, 150, 150);
-  border: 1px solid rgb(200, 200, 200);
-  background-color: rgb(240, 240, 240);
-  cursor: default;
+  color: #cccccc;
+  background-color: #eaecef;
+  cursor: not-allowed;
 }
 
 i {
@@ -70,14 +69,16 @@ i {
 }
 
 .container {
-  background-color: white;
+  background-color: #ffffff;
   border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .content {
-  padding: 10px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   margin: 0 auto;
-  width: 90%;
+  width: 80%;
+  max-width: 960px;
 }

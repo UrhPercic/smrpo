@@ -17,6 +17,7 @@ import AddSprint from "./components/project/sprints/add-sprint";
 import EditProfile from "./components/user-profile/edit-profile";
 import EditSprint from "./components/project/sprints/edit-sprint";
 import Users from "./components/users/users";
+import AddUserStory from "./components/project/userStory/add-userStory";
 
 function App() {
   return (
@@ -46,6 +47,10 @@ function App() {
               <Route
                 path="/projects/add-sprint/:projectId"
                 element={<AddSprint />}
+              />
+              <Route
+                  path="/projects/add-userStory/:projectId"
+                  element={<AddUserStory />}
               />
               <Route
                 path="/projects/edit-sprint/:sprintId"
