@@ -57,7 +57,7 @@ const AddUserStory = () => {
             try {
                 const storyId = await addData("/userStory", userStoryData);
                 alert("Story added successfully");
-                navigate(`/projects/stories/${storyId}`);
+                navigate(`/projects/listStories/${storyId}`);
 
             } catch (error) {
                 console.error("Error adding new story:", error);
