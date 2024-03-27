@@ -5,15 +5,18 @@ import "./edit-sprint.css";
 
 const EditSprint = () => {
 
-    const { sprintId } = useParams();
-    const [sprints, setSprints] = useState([]);
-    const [formData, setFormData] = useState({
-        sprintName: "",
-        startTime: "",
-        endTime: "",
-        velocity: ""
+  const { sprintId } = useParams();
+  const [sprints, setSprints] = useState([]);
+  const [formData, setFormData] = useState({
+      sprintName: "",
+      startTime: "",
+      endTime: "",
+      velocity: "",
+      isActive: ""
   });
   const navigate = useNavigate();
+
+  var isActive = false;
 
   useEffect(() => {
     
@@ -26,8 +29,19 @@ const EditSprint = () => {
             
             // Find the object with the specific ID
             const foundObject = data.find(obj => obj.id === sprintId);
+            const currentDateTime = new Date();
+            const startDateTime = new Date(foundObject.startTime);
+            const endDateTime = new Date(foundObject.endTime);
+            
+            isActive = currentDateTime >= startDateTime && currentDateTime <= endDateTime;
+            foundObject.isActive = isActive;
+
             setFormData(foundObject);
             console.log(foundObject); // Log the found object
+
+            
+            console.log(isActive);
+
             })
             .catch((error) => console.error('Error fetching sprints:', error));
         } catch (error) {
@@ -39,7 +53,7 @@ const EditSprint = () => {
 
     // Find the object with the specific ID
     
-
+    console.log(isActive);
     console.log(sprints);
     console.log(sprintId);
     //console.log(foundObject);
@@ -62,21 +76,26 @@ const EditSprint = () => {
     const endTime = new Date(formData.endTime);
     const currentTime = new Date();
 
-    if (startTime > endTime){
-        alert("Start date cannot be before end date!")
-        return;
-    }
+    const vel = Number(formData.velocity);
+    console.log(isActive);
 
-    if (startTime < currentTime){
-        alert("Start date cannot be before the current date!")
-        return;
-    }
+    if(!formData.isActive){
+      if (startTime > endTime){
+          alert("Start date cannot be before end date!")
+          return;
+      }
 
-    if (isNaN(formData.velocity)){
-        alert("The velocity should be a number!")
-        return;
-    }
+      if (startTime < currentTime){
+          alert("Start date cannot be before the current date!")
+          return;
+      }
 
+    }
+    if (isNaN(formData.velocity) || (vel < 0) || (vel > 1000)){
+      alert("The velocity should be a positive number (0 - 999)!")
+      return;
+    }
+  
 
 
     const updateData = {
@@ -114,7 +133,6 @@ const EditSprint = () => {
 
     
   };
-
   return (
     <div className="edit-sprint">
       <h1>Edit Sprint</h1>
@@ -123,6 +141,7 @@ const EditSprint = () => {
           <div className="form-group">
             <label>Sprint name:</label>
             <input
+              disabled = {formData.isActive}
               type="text"
               name="sprintName"
               value={formData.sprintName}
@@ -132,6 +151,7 @@ const EditSprint = () => {
           <div className="form-group">
             <label>Start time:</label>
             <input
+              disabled = {formData.isActive}
               type="datetime-local"
               name="startTime"
               value={formData.startTime}
@@ -141,6 +161,7 @@ const EditSprint = () => {
           <div className="form-group">
             <label>End time:</label>
             <input
+              disabled = {formData.isActive}
               type="datetime-local"
               name="endTime"
               value={formData.endTime}

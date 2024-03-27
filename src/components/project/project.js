@@ -52,7 +52,7 @@ const Project = () => {
       minute: 'numeric',
       second: 'numeric',
     };
-    return dateTime.toLocaleDateString('en-US', options);
+    return dateTime.toLocaleDateString('en-GB', options);
   };
 
   return (
@@ -81,14 +81,18 @@ const Project = () => {
             {/* Display fetched sprints as a list */}
             <div className="sprints-list">
               <h2>Sprints:</h2>
-              {projectSprints.map(sprint => {
+              {projectSprints
+              .slice() // Create a copy of the array to avoid mutating the original
+              .sort((a, b) => new Date(a.startTime) - new Date(b.startTime))
+              .map(sprint => {
                 const startDateTime = new Date(sprint.startTime);
                 const endDateTime = new Date(sprint.endTime);
                 const currentDateTime = new Date();
                 const isActive = currentDateTime >= startDateTime && currentDateTime <= endDateTime;
-
+                const isFinished = currentDateTime >= endDateTime;
+                
                 const sprintSectionStyle = {
-                  border: isActive ? '2px solid green' : '2px solid #ccc',
+                  border: isActive ? '2px solid #3498db' : '2px solid #ccc',
                   borderRadius: '5px',
                   padding: '10px',
                   marginBottom: '10px'
@@ -101,18 +105,22 @@ const Project = () => {
                 
                 
 
+                
+
                 return(
                   <div key={sprint.id} style={sprintSectionStyle} className="sprint-section">
+                  {isActive && <div className="active-indicator">Active</div>}
+                  {isFinished && <div className="finished-indicator">Finished</div>}
                   <h3>{sprint.sprintName}</h3>
                   <p>Start Time: {formatDateTime(sprint.startTime)}</p>
                   <p>End Time: {formatDateTime(sprint.endTime)}</p>
-                  <p>Velocity: {sprint.velocity}</p>
+                  <p>Velocity: {sprint.velocity} pts</p>
                   <div className="progress-bar-container">
                     <div className="progress-bar" style={{ width: `${progress}%` }}></div>
                   </div>
-                  <div className="edit-sprint-button">
+                  {!isFinished && <div className="edit-sprint-button">
                     <Link to={`/projects/edit-sprint/${sprint.id}`}>Edit Sprint</Link>
-                  </div>
+                  </div>}
                 </div>
                 
                 )

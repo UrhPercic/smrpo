@@ -11,6 +11,7 @@
 }
 
 .sprint-section {
+  position: relative;
   border: 2px solid #ccc;
   border-radius: 15px;
   padding: 10px;
@@ -31,7 +32,7 @@
 
 .progress-bar {
   height: 100%;
-  background-color: green;
+  background-color: #3498db;
   border-radius: 5px;
 }
 
@@ -52,4 +53,32 @@
 
 .edit-sprint-button a:hover {
   background-color: #8d8d8d;
+}
+
+.active-indicator {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #3498db;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 0 0 0 5px;
+  width: auto; /* Set the width as needed */
+  max-width: 50px; /* Set the maximum width as needed */
+  text-align: center; /* Center the text horizontally */
+  font-size: large;
+}
+
+.finished-indicator {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #a2d3f3;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 0 0 0 5px;
+  width: auto; /* Set the width as needed */
+  max-width: 80px; /* Set the maximum width as needed */
+  text-align: center; /* Center the text horizontally */
+  font-size: large;
 }

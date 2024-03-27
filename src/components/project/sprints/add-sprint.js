@@ -14,8 +14,6 @@ const AddSprint = () => {
         velocity: ""
       });
 
-
-
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
@@ -28,6 +26,20 @@ const AddSprint = () => {
         const endTime = new Date(formData.endTime);
         const currentTime = new Date();
 
+        const vel = Number(formData.velocity);
+
+        console.log(startTime.getDay());
+
+        if (startTime.getDay() == 6 || startTime.getDay() == 0){
+          alert("Start date must be a weekday!")
+          return;
+        }
+
+        if (endTime.getDay() == 6 || endTime.getDay() == 0){
+          alert("End date must be a weekday!")
+          return;
+        }
+
         if (startTime > endTime){
           alert("Start date cannot be before end date!")
           return;
@@ -38,14 +50,10 @@ const AddSprint = () => {
           return;
         }
 
-        if (isNaN(formData.velocity)){
-          alert("The velocity should be a number!")
+        if (isNaN(formData.velocity) || (vel < 0) || (vel > 1000)){
+          alert("The velocity should be a positive number (0 - 999)!")
           return;
         }
-
-        
-        console.log(projectSprints);
-        
 
         const sprintData = {
             sprintName: formData.sprintName,
