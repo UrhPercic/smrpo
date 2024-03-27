@@ -33,13 +33,16 @@ const Project = () => {
     navigate(`/projects/edit/${projectId}`);
   };
 
-  const handleAddTask = () => {
-    navigate(`/projects/add-task/${projectId}`);
-  };
-
   const handleAddSprint = () => {
     navigate(`/projects/add-sprint/${projectId}`);
   };
+  const handleAddUserStory = () => {
+    navigate(`/projects/add-userStory/${projectId}`);
+  };
+  const handleUserStory = () => {
+    navigate(`/projects/listStories/${projectId}`);
+  };
+
 
   const formatDateTime = (dateTimeString) => {
     const dateTime = new Date(dateTimeString);
@@ -67,9 +70,12 @@ const Project = () => {
                   Edit Project
                   <i class="fa-solid fa-pen-to-square"></i>
                 </button>
-                <button onClick={handleAddTask} className="default-button">
-                  Add task
-                  <i class="fa-solid fa-list-check"></i>
+                <button onClick={handleAddUserStory} className="default-button">
+                  Add Story
+                  <i className="fa-solid fa-book"></i>
+                </button>
+                <button onClick={handleUserStory} className="default-button">
+                  User Stories
                 </button>
                 <button onClick={handleAddSprint} className="default-button">
                   Add Sprint

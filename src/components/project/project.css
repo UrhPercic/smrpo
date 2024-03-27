@@ -1,55 +1,61 @@
 .add-task {
-  background-color: rgb(219, 219, 219);
+  background-color: #e9ecef;
   border-radius: 10px;
-  padding: 10px 5px;
+  padding: 20px 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
 }
 
 .project-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 20px;
 }
 
 .sprint-section {
-  border: 2px solid #ccc;
+  border: 2px solid #dee2e6;
   border-radius: 15px;
-  padding: 10px;
-  margin-bottom: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .sprint-section h3 {
   margin-top: 0;
+  color: #495057;
 }
 
 .progress-bar-container {
-  height: 10px;
-  background-color: #f0f0f0;
+  height: 20px;
+  background-color: #e9ecef;
   border-radius: 5px;
-  margin-top: 10px;
+  margin-top: 20px;
   margin-bottom: 20px;
 }
 
 .progress-bar {
   height: 100%;
-  background-color: green;
+  background-color: #28a745;
   border-radius: 5px;
+  transition: width 0.3s ease;
 }
 
 .edit-sprint-button {
-  margin-bottom: 10px;
-  font-size: 14px;
+  margin-bottom: 20px;
+  font-size: 16px;
+  text-align: right;
 }
 
 .edit-sprint-button a {
-  padding: 5px 10px;
-  background-color: #4d4d4d;
+  padding: 8px 15px;
+  background-color: #007bff;
   color: #fff;
   text-decoration: none;
   border-radius: 5px;
   transition: background-color 0.3s ease;
-  
 }
 
 .edit-sprint-button a:hover {
-  background-color: #8d8d8d;
+  background-color: #0056b3;
 }
