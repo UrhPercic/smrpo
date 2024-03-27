@@ -6,14 +6,12 @@ import "./add-userStory.css";
 const AddUserStory = () => {
     const navigate = useNavigate();
     const { projectId } = useParams();
-    const { userStoryId } = useParams();
     const [priority] = useState(["Must Have", "Could Have", "Should Have", "Won't have this time"]);
     const [businessValue] = useState(["Low", "Medium", "High"]);
 
     const [formData, setFormData] = useState({
         userStoryName: "",
         projectId: projectId,
-        userStoryId: userStoryId,
         description: "",
         test: "",
         priority: "Low",
@@ -23,6 +21,9 @@ const AddUserStory = () => {
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+    const handleAddTask = () => {
+        navigate(`/projects/add-task/${projectId}`);
     };
 
     const handleSubmit = async (e) => {
@@ -54,9 +55,10 @@ const AddUserStory = () => {
             alert("User story with this name already exists");
         } else {
             try {
-                await addData("/userStory", userStoryData);
+                const storyId = await addData("/userStory", userStoryData);
                 alert("Story added successfully");
-                navigate("/home");
+                navigate(`/projects/stories/${storyId}`);
+
             } catch (error) {
                 console.error("Error adding new story:", error);
                 alert("Failed to add story");
@@ -140,6 +142,12 @@ const AddUserStory = () => {
                                 </option>
                             ))}
                         </select>
+                    </div>
+                    <div className="child">
+                        <button className=" form-control btn btn-primary mr-3 btn-secondary" onClick={handleAddTask}>
+                            Add task
+                            <i className="fa-solid fa-plus"></i>
+                        </button>
                     </div>
                     <div className="button-wrapper">
                         <button className="btn btn-primary mr-3 add-button">Add Story</button>

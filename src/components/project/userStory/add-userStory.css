@@ -14,13 +14,13 @@
 .child {
     display: inline-block;
     padding: 1rem 1rem;
-    vertical-align: middle;
 }
 .form-group .form-control {
     width: 40%;
     margin: auto;
     box-sizing: border-box;
-    display: block;
+    display: flex;
+    align-items: center;
 }
 
 
