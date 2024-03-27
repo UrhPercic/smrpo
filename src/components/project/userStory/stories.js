@@ -51,7 +51,7 @@ const Story = () => {
         navigate("/userStory/edit", { state: { storyId } });
     };
 
-    return isAdmin ? (
+    return  (
         <div className="container">
             <div className="content">
                 <h1>Stories</h1>
@@ -69,7 +69,7 @@ const Story = () => {
                 </div>
             </div>
         </div>
-    ) : null;
+    )
 };
 
 export default Story;
