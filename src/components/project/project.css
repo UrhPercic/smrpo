@@ -59,3 +59,8 @@
 .edit-sprint-button a:hover {
   background-color: #0056b3;
 }
+
+/* project.css */
+.preserve-whitespace {
+  white-space: pre-wrap; /* pre-wrap preserves whitespace and wraps text */
+}
