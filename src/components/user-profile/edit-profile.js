@@ -11,6 +11,7 @@ const EditProfile = () => {
     username: "",
     email: "",
   });
+  const [isDisabled, setIsDisabled] = useState(false);
   const navigate = useNavigate();
   const { userId: paramUserId } = useParams();
   const location = useLocation();
@@ -26,7 +27,13 @@ const EditProfile = () => {
     const fetchUserDetails = async () => {
       try {
         const userData = await getData(`/users/${userId}`);
-        setUserDetails(userData);
+        if (userData.privilege == "Disabled") {
+          setIsDisabled(true);
+        } else {
+          setIsDisabled(false);
+        }
+
+        setUserDetails({ ...userData, id: userId });
         setFormData(userData);
       } catch (error) {
         console.error("Error fetching user details:", error);
@@ -44,12 +51,27 @@ const EditProfile = () => {
     });
   };
 
+  const handleToggleDisable = (e) => {
+    e.preventDefault();
+    const newIsDisabled = !isDisabled;
+    setIsDisabled(newIsDisabled);
+
+    setFormData({
+      ...formData,
+      privilege: newIsDisabled ? "Disabled" : "Normal",
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const updatedData = {
       ...formData,
+      privilege: isDisabled ? "Disabled" : "Normal",
       userID: userDetails.id,
     };
+
+    console.log("Sending data:", updatedData);
 
     try {
       const response = await fetch(
@@ -67,7 +89,6 @@ const EditProfile = () => {
         const data = await response.json();
         alert("User profile updated successfully!");
         navigate(`/user-profile`);
-        // Optionally reset form here or navigate to another page
       } else {
         const errorData = await response.json();
         alert("Failed to update user info: " + errorData.error);
@@ -119,7 +140,17 @@ const EditProfile = () => {
               onChange={handleChange}
             />
           </div>
-          {/* Add more form fields for other user details */}
+          {location.state?.userId && (
+            <button
+              type="button"
+              onClick={handleToggleDisable}
+              className={`disable ${
+                isDisabled ? "default-button" : "red-button"
+              }`}
+            >
+              {isDisabled ? "Enable User" : "Disable User"}
+            </button>
+          )}
           <button type="submit" className="update-profile-button">
             Update
           </button>
