@@ -9,7 +9,7 @@ In the project directory, you can run:
 ### `npm start`
 ### `npm install bootstrap`
 ### `node server.js`
-
+###  npm install react-beautiful-dnd --save    
 ## npm install react-scripts --save
 ## npm install react-router-dom
 ## npm install @fortawesome/fontawesome-free
