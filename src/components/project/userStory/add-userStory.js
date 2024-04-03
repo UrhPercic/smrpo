@@ -1,26 +1,27 @@
-import React, { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import React, {useState} from "react";
+import {useNavigate, useParams} from "react-router-dom";
 import {addData, getData} from "../../../db/realtimeDatabase";
 import "./add-userStory.css";
 
 const AddUserStory = () => {
     const navigate = useNavigate();
-    const { projectId } = useParams();
+    const {projectId} = useParams();
     const [priority] = useState(["Must Have", "Could Have", "Should Have", "Won't have this time"]);
     const [businessValue] = useState(["Low", "Medium", "High"]);
-
+    const [status] = useState(["Product Backlog1", "Product Backlog2", "Sprint Backlog", "In Progress", "Testing", "Done", "Backlog"]);
     const [formData, setFormData] = useState({
         userStoryName: "",
         projectId: projectId,
         description: "",
         test: "",
         priority: "Low",
-        businessValue: "Must Have"
+        businessValue: "Must Have",
+        status: "Product Backlog1"
     });
 
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        setFormData({...formData, [e.target.name]: e.target.value});
     };
     const handleAddTask = () => {
         navigate(`/projects/add-task/${projectId}`);
@@ -35,7 +36,8 @@ const AddUserStory = () => {
             description: formData.description,
             test: formData.test,
             priority: formData.priority,
-            businessValue: formData.businessValue
+            businessValue: formData.businessValue,
+            status: formData.status
         };
 
         const existingUserStories = await getData("/userStory");
@@ -44,7 +46,7 @@ const AddUserStory = () => {
         let duplicateFound = false;
         if (existingUserStories) {
             for (const key in existingUserStories) {
-                if (existingUserStories[key].userStoryName === userStoryData.userStoryName) {
+                if (existingUserStories[key].projectId === userStoryData.projectId && existingUserStories[key].userStoryName === userStoryData.userStoryName) {
                     duplicateFound = true;
                     break;
                 }
@@ -57,7 +59,7 @@ const AddUserStory = () => {
             try {
                 const storyId = await addData("/userStory", userStoryData);
                 alert("Story added successfully");
-                navigate(`/projects/listStories/${storyId}`);
+                navigate(`/project/${projectId}`);
 
             } catch (error) {
                 console.error("Error adding new story:", error);
@@ -72,7 +74,7 @@ const AddUserStory = () => {
             <div className="card">
                 <h4 className="card-title">Add Story</h4>
                 <form onSubmit={handleSubmit}>
-                    <div className="form-group">
+                    <div className="form-group1">
                         <label htmlFor="userStoryName">Story Name:</label>
                         <input
                             type="text"
@@ -84,7 +86,7 @@ const AddUserStory = () => {
                             required
                         />
                     </div>
-                    <div className="form-group">
+                    <div className="form-group1">
                         <label htmlFor="description">Description:</label>
                         <textarea
                             className="form-control"
@@ -96,14 +98,14 @@ const AddUserStory = () => {
                         ></textarea>
                     </div>
 
-                    <div className="form-group">
+                    <div className="form-group1">
                         <label htmlFor="test">Test:</label>
                         <input
                             type="text"
                             className="form-control"
                             name="test"
                             id="test"
-                            value={formData.velocity}
+                            value={formData.test}
                             onChange={handleChange}
                             required
                         />
