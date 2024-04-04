@@ -33,6 +33,8 @@ const Header = () => {
         return "Users";
       case "/user-profile/edit":
         return "Edit profile";
+      case "/sub-task":
+        return "Sub tasks";
       default:
         return "SMRPO";
     }
