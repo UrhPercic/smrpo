@@ -1,9 +1,3 @@
-.app-header {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-}
-
 .projects {
   overflow-y: auto;
 }

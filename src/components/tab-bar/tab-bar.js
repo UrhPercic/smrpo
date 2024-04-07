@@ -31,6 +31,11 @@ const TabBar = () => {
     navigate(path);
   };
 
+  const handleLogoutClick = () => {
+    localStorage.clear();
+    navigate("/");
+  };
+
   const isActive = (path) => {
     return window.location.pathname === path;
   };
@@ -38,64 +43,70 @@ const TabBar = () => {
   return (
     <div className="tab-bar">
       <div className="app-header">
-        <button
-          className={`default-button ${
-            isActive("/planning-poker") ? "active-button" : ""
-          }`}
-          onClick={() => handleNavigationClick("/planning-poker")}
-        >
-          <strong>Planning poker</strong>
-          <i className="fa-solid fa-diamond"></i>
+        <button className="default-button" onClick={handleLogoutClick}>
+          Logout
+          <i class="fa-solid fa-door-open"></i>
         </button>
-        <button
-          className={`default-button ${
-            isActive("/add-project") ? "active-button" : ""
-          }`}
-          onClick={() => handleNavigationClick("/add-project")}
-        >
-          <strong>Add project</strong>
-          <i className="fa-solid fa-plus"></i>
-        </button>
-        {userDetails?.privilege === "admin" && (
+        <div>
           <button
             className={`default-button ${
-              isActive("/add-user") ? "active-button" : ""
+              isActive("/planning-poker") ? "active-button" : ""
             }`}
-            onClick={() => handleNavigationClick("/add-user")}
+            onClick={() => handleNavigationClick("/planning-poker")}
           >
-            <strong>Add user</strong>
+            <strong>Planning poker</strong>
+            <i className="fa-solid fa-diamond"></i>
+          </button>
+          <button
+            className={`default-button ${
+              isActive("/add-project") ? "active-button" : ""
+            }`}
+            onClick={() => handleNavigationClick("/add-project")}
+          >
+            <strong>Add project</strong>
             <i className="fa-solid fa-plus"></i>
           </button>
-        )}
-        {userDetails?.privilege === "admin" && (
+          {userDetails?.privilege === "admin" && (
+            <button
+              className={`default-button ${
+                isActive("/add-user") ? "active-button" : ""
+              }`}
+              onClick={() => handleNavigationClick("/add-user")}
+            >
+              <strong>Add user</strong>
+              <i className="fa-solid fa-plus"></i>
+            </button>
+          )}
+          {userDetails?.privilege === "admin" && (
+            <button
+              className={`default-button ${
+                isActive("/users") ? "active-button" : ""
+              }`}
+              onClick={() => handleNavigationClick("/users")}
+            >
+              <strong>Users</strong>
+              <i className="fas fa-user"></i>
+            </button>
+          )}
           <button
             className={`default-button ${
-              isActive("/users") ? "active-button" : ""
+              isActive("/user-profile") ? "active-button" : ""
             }`}
-            onClick={() => handleNavigationClick("/users")}
+            onClick={() => handleNavigationClick("/user-profile")}
           >
-            <strong>Users</strong>
+            <strong>{userDetails?.username}</strong>
             <i className="fas fa-user"></i>
           </button>
-        )}
-        <button
-          className={`default-button ${
-            isActive("/user-profile") ? "active-button" : ""
-          }`}
-          onClick={() => handleNavigationClick("/user-profile")}
-        >
-          <strong>{userDetails?.username}</strong>
-          <i className="fas fa-user"></i>
-        </button>
-        <button
-          className={`default-button ${
-            isActive("/home") ? "active-button" : ""
-          }`}
-          onClick={() => handleNavigationClick("/home")}
-        >
-          <strong>Home</strong>
-          <i className="fa-solid fa-house"></i>
-        </button>
+          <button
+            className={`default-button ${
+              isActive("/home") ? "active-button" : ""
+            }`}
+            onClick={() => handleNavigationClick("/home")}
+          >
+            <strong>Home</strong>
+            <i className="fa-solid fa-house"></i>
+          </button>
+        </div>
       </div>
       <hr />
     </div>
