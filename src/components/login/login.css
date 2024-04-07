@@ -1,15 +1,19 @@
 .login {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
 
-.login select {
+.login input {
   width: 60%;
-  margin: auto;
-  border: none;
+  margin: 10px auto;
   padding: 5px 10px;
   border-radius: 10px;
   font-size: 20px;
-  color: rgb(99, 99, 99);
-  background-color: white;
-  display: block;
+  border: 1px solid #ccc;
+}
+
+.login button {
+  cursor: pointer;
 }

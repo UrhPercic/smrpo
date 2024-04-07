@@ -15,6 +15,9 @@ const Header = () => {
     if (pathname.startsWith("/projects/add-task/")) {
       return "Add task to project";
     }
+    if (pathname.startsWith("/projects/diagram/")) {
+      return "Diagram burn down";
+    }
 
     switch (pathname) {
       case "/":
@@ -33,8 +36,6 @@ const Header = () => {
         return "Users";
       case "/user-profile/edit":
         return "Edit profile";
-      case "/sub-task":
-        return "Sub tasks";
       default:
         return "SMRPO";
     }

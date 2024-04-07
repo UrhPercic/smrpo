@@ -20,7 +20,7 @@ import Users from "./components/users/users";
 import AddUserStory from "./components/project/userStory/add-userStory";
 import EditStory from "./components/project/userStory/edit-userStory";
 import Sprints from "./components/project/userStory/storyList";
-import SubTask from "./components/sub-task/sub-task";
+import DiagramBurnDown from "./components/diagram-burn-down/diagram-burn-down";
 
 function App() {
   return (
@@ -38,8 +38,11 @@ function App() {
               <Route path="/user-profile/edit" element={<EditProfile />} />
               <Route path="planning-poker" element={<PlanningPoker />} exact />
               <Route path="users" element={<Users />} exact />
-              <Route path="sub-task" element={<SubTask />} exact />
               <Route path="/project/:projectId" element={<Project />} />
+              <Route
+                path="/projects/diagram/:projectId"
+                element={<DiagramBurnDown />}
+              />
               <Route
                 path="/projects/edit/:projectId"
                 element={<ProjectEditForm />}
