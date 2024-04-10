@@ -50,15 +50,6 @@ const TabBar = () => {
         <div>
           <button
             className={`default-button ${
-              isActive("/planning-poker") ? "active-button" : ""
-            }`}
-            onClick={() => handleNavigationClick("/planning-poker")}
-          >
-            <strong>Planning poker</strong>
-            <i className="fa-solid fa-diamond"></i>
-          </button>
-          <button
-            className={`default-button ${
               isActive("/add-project") ? "active-button" : ""
             }`}
             onClick={() => handleNavigationClick("/add-project")}

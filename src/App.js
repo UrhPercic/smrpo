@@ -36,9 +36,12 @@ function App() {
               <Route path="add-user" element={<AddUser />} exact />
               <Route path="user-profile" element={<UserProfile />} exact />
               <Route path="/user-profile/edit" element={<EditProfile />} />
-              <Route path="planning-poker" element={<PlanningPoker />} exact />
               <Route path="users" element={<Users />} exact />
               <Route path="/project/:projectId" element={<Project />} />
+              <Route
+                path="/projects/planning-poker/:projectId"
+                element={<PlanningPoker />}
+              />
               <Route
                 path="/projects/diagram/:projectId"
                 element={<DiagramBurnDown />}
