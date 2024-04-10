@@ -7,6 +7,15 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 In the project directory, you can run:
 
 ### `npm start`
+### `npm install bootstrap`
+### `node server.js`
+## npm install highcharts-react-official
+## npm install react-beautiful-dnd --save    
+## npm install react-scripts --save
+## npm install react-router-dom
+## npm install @fortawesome/fontawesome-free
+## npm install bcryptjs
+## npm install firebase-admin
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.

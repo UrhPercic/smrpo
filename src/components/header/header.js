@@ -15,6 +15,9 @@ const Header = () => {
     if (pathname.startsWith("/projects/add-task/")) {
       return "Add task to project";
     }
+    if (pathname.startsWith("/projects/diagram/")) {
+      return "Diagram burn down";
+    }
 
     switch (pathname) {
       case "/":

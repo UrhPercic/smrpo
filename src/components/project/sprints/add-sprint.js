@@ -76,7 +76,7 @@ const AddSprint = () => {
             if (response.ok) {
             const data = await response.json();
             alert("Sprint added successfully");
-            navigate(`/project/${projectId}`)
+            navigate(`/projects/listSprints/${projectId}`)
             // Optionally reset form here or navigate to another page
             } else {
             const errorData = await response.json();

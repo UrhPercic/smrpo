@@ -60,7 +60,9 @@ const Users = () => {
           {users.map((user) => (
             <div
               key={user.id}
-              className="user"
+              className={`user ${
+                user.privilege === "Disabled" ? "disabled-user" : ""
+              }`}
               onClick={() => handleUserClick(user.id)}
             >
               {user.name}

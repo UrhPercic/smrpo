@@ -17,6 +17,10 @@ import AddSprint from "./components/project/sprints/add-sprint";
 import EditProfile from "./components/user-profile/edit-profile";
 import EditSprint from "./components/project/sprints/edit-sprint";
 import Users from "./components/users/users";
+import AddUserStory from "./components/project/userStory/add-userStory";
+import EditStory from "./components/project/userStory/edit-userStory";
+import Sprints from "./components/project/userStory/storyList";
+import DiagramBurnDown from "./components/diagram-burn-down/diagram-burn-down";
 
 function App() {
   return (
@@ -36,6 +40,10 @@ function App() {
               <Route path="users" element={<Users />} exact />
               <Route path="/project/:projectId" element={<Project />} />
               <Route
+                path="/projects/diagram/:projectId"
+                element={<DiagramBurnDown />}
+              />
+              <Route
                 path="/projects/edit/:projectId"
                 element={<ProjectEditForm />}
               />
@@ -48,8 +56,20 @@ function App() {
                 element={<AddSprint />}
               />
               <Route
+                path="/projects/add-userStory/:projectId"
+                element={<AddUserStory />}
+              />
+              <Route
                 path="/projects/edit-sprint/:sprintId"
                 element={<EditSprint />}
+              />
+              <Route
+                path="/projects/edit-story/:storyId"
+                element={<EditStory />}
+              />
+              <Route
+                path="/projects/listSprints/:projectId"
+                element={<Sprints />}
               />
             </Route>
           </Routes>

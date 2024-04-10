@@ -1,41 +1,42 @@
-import React, { useState, useEffect } from "react";
-import { getData } from "../../db/realtimeDatabase";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import bcrypt from "bcryptjs";
+import { getData } from "../../db/realtimeDatabase";
 import "./login.css";
 
 const Login = () => {
-  const [users, setUsers] = useState([]);
-  const [selectedUser, setSelectedUser] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const fetchUsers = async () => {
-    try {
-      const fetchedUsers = await getData("/users");
-      if (fetchedUsers) {
-        setUsers(
-          Object.entries(fetchedUsers).map(([key, value]) => ({
-            id: key,
-            ...value,
-          }))
+  const handleUsernameChange = (e) => {
+    setUsername(e.target.value);
+  };
+
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+  };
+
+  const handleLogin = async () => {
+    if (username && password) {
+      try {
+        const users = await getData("/users");
+        const userEntry = Object.entries(users).find(
+          ([, value]) => value.username === username
         );
+
+        const user = userEntry ? { id: userEntry[0], ...userEntry[1] } : null;
+
+        if (user && bcrypt.compareSync(password, user.hashed_password)) {
+          localStorage.setItem("userId", user.id);
+          navigate("/home", { state: { userId: user.id } });
+        } else {
+          alert("Invalid username or password");
+        }
+      } catch (error) {
+        console.error("Login error:", error);
+        alert("An error occurred during login");
       }
-    } catch (error) {
-      console.error("Error fetching users:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const handleSelectChange = (event) => {
-    setSelectedUser(event.target.value);
-  };
-
-  const handleLogin = () => {
-    if (selectedUser) {
-      localStorage.setItem("userId", selectedUser);
-      navigate("/home", { state: { userId: selectedUser } });
     }
   };
 
@@ -43,20 +44,24 @@ const Login = () => {
     <div className="login">
       <h1>Login</h1>
       <hr />
-      <select onChange={handleSelectChange} value={selectedUser}>
-        <option value="" disabled>
-          Select a User
-        </option>
-        {users.map((user) => (
-          <option key={user.id} value={user.id}>
-            {user.username}
-          </option>
-        ))}
-      </select>
+      <input
+        type="text"
+        value={username}
+        onChange={handleUsernameChange}
+        placeholder="Username"
+        required
+      />
+      <input
+        type="password"
+        value={password}
+        onChange={handlePasswordChange}
+        placeholder="Password"
+        required
+      />
       <button
         className="default-button"
         onClick={handleLogin}
-        disabled={!selectedUser}
+        disabled={!username || !password}
       >
         Login
       </button>
