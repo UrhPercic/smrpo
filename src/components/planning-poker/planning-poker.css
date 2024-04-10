@@ -1,0 +1,30 @@
+.content > select {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.button {
+  display: flex;
+  justify-content: space-around;
+}
+
+.users {
+  overflow-y: auto;
+  max-height: 40vh;
+}
+
+.users div {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.users input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
+
+.users label {
+  margin: 0;
+}
