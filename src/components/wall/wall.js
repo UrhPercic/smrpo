@@ -201,11 +201,84 @@ const DailyScrum = ({addPost, posts}) => {
         </div>
     );
 }
-const Documentation = () => (
-    <div>
-        <h3>Documentation</h3>
-    </div>
-);
+
+
+const Documentation = () => {
+    const { projectId } = useParams();
+    const [docContent, setDocContent] = useState("");
+    const [documentations, setDocumentations] = useState([]);
+
+    const fetchDocumentation = async () => {
+        const docs = await getData(`/projects/${projectId}/documentation`);
+        if (docs) {
+            const docsArray = Object.entries(docs).map(([key, value]) => ({
+                id: key,
+                content: value.content
+            }));
+            setDocumentations(docsArray);
+        } else {
+            setDocumentations([]);
+        }
+    };
+
+    useEffect(() => {
+        fetchDocumentation();
+    }, [projectId]);
+
+    const handleDocChange = (e) => {
+        setDocContent(e.target.value);
+    };
+
+    const handleSave = async () => {
+        await addData(`/projects/${projectId}/documentation`, { content: docContent });
+        alert("Documentation saved.");
+        setDocContent("");
+        await fetchDocumentation();
+    };
+
+    const handleImport = async (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                setDocContent(e.target.result);
+            };
+            reader.readAsText(file);
+        }
+    };
+
+    const handleExport = () => {
+        const element = document.createElement("a");
+        const file = new Blob([docContent], { type: 'text/plain' });
+        element.href = URL.createObjectURL(file);
+        element.download = "projectDocumentation.txt";
+        document.body.appendChild(element); // Required for this to work in Firefox
+        element.click();
+    };
+
+    return (
+        <div>
+            <h3>Documentation</h3>
+            <div className="documentation-list">
+                {documentations.map(doc => (
+                    <div key={doc.id} className="documentation-entry">
+                        <p>{doc.content}</p>
+                    </div>
+                ))}
+            </div>
+            <h4>Add New Documentation</h4>
+            <textarea value={docContent} onChange={handleDocChange} rows="5" cols="50"></textarea>
+            <div>
+                <button onClick={handleSave}>Save New Documentation</button>
+                <input type="file" onChange={handleImport} />
+                <button onClick={handleExport}>Export</button>
+            </div>
+        </div>
+    );
+};
+
+
+
 
 export default Wall;
 
