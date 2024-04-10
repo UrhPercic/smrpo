@@ -235,7 +235,6 @@ const Project = () => {
             </p>
             {/* ADD USERS */}
 
-            {/* Display fetched sprints as a list */}
             <div className="stories-list">
               <DragDropContext onDragEnd={onDragEnd}>
                 <div className="scrum-board-container">

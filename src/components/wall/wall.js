@@ -42,15 +42,25 @@ const Wall = () => {
 const DailyScrum = ({ addPost, posts }) => {
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
-    const [currentUser, setCurrentUser] = useState({
+    const [currentUser, setCurrentUser] = useState({});
 
-    });
-    const [postContent, setPostContent] = useState('');
 
     const handleChange = (e) => {
         setMessage(e.target.value);
     };
     useEffect(() => {
+        const loggedInUserId = localStorage.getItem("userId");
+        if (loggedInUserId) {
+            const fetchUserDetails = async () => {
+                try {
+                    const user = await getData(`/users/${loggedInUserId}`);
+                    setCurrentUser({ username: user.username });
+                } catch (error) {
+                    console.error("Error fetching user details:", error);
+                }
+            };
+            fetchUserDetails();
+        }
         const fetchMessages = async () => {
             try {
                 const fetchedMessages = await getData("/dailyScrumMessages");
@@ -65,16 +75,19 @@ const DailyScrum = ({ addPost, posts }) => {
                 console.error("Error fetching messages:", error);
             }
         };
-
         fetchMessages();
     }, []);
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log("Current user before submitting:", currentUser); // Log current user for debugging
+
         const newMessage = {
             username: currentUser.username || 'testUser',
             message: message,
             timestamp: new Date().toISOString()
         };
+
+        console.log("New message being submitted:", newMessage); // Log new message for debugging
 
         try {
             const messageRef = await addData("/dailyScrumMessages", newMessage);
@@ -85,7 +98,7 @@ const DailyScrum = ({ addPost, posts }) => {
         }
     };
 
-    return (
+            return (
         <div className="container">
             <div className="card">
                 <h4 className="card-title">Discussion</h4>
@@ -106,7 +119,19 @@ const DailyScrum = ({ addPost, posts }) => {
                         </button>
                     </div>
                 </form>
+                <div className="messages-list">
+                    {messages.map((post, index) => (
+                        <div key={index} className="message-item">
+                            <strong>{post.username}</strong>: {post.message}
+                            <div className="button-wrapper">
+                                <button type="comment" className="btn btn-primary">
+                                    Comment
+                                </button>
+                            </div>
+                        </div>
 
+                    ))}
+                </div>
             </div>
         </div>
     );
