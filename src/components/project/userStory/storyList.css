@@ -1,5 +1,18 @@
 
+.add-task {
+    background-color: rgb(219, 219, 219);
+    border-radius: 10px;
+    padding: 10px 5px;
+  }
+  
+  .project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
 .sprint-section {
+    position: relative;
     border: 2px solid #dee2e6;
     border-radius: 15px;
     padding: 20px;
@@ -13,36 +26,81 @@
 }
 
 .progress-bar-container {
-    height: 20px;
-    background-color: #e9ecef;
+    height: 10px;
+    background-color: #f0f0f0;
     border-radius: 5px;
-    margin-top: 20px;
+    margin-top: 10px;
     margin-bottom: 20px;
-}
+  }
 
 .progress-bar {
     height: 100%;
-    background-color: #28a745;
+    background-color: #3498db;
     border-radius: 5px;
-    transition: width 0.3s ease;
-}
+  }
 
-.edit-sprint-button {
-    margin-bottom: 20px;
-    font-size: 16px;
+.edit-sprint-button, .delete-sprint-button {
+    margin-bottom: 10px;
+    margin-top: 15px;
+    margin-right: 10px;
+    font-size: 14px;
     text-align: right;
+    display: inline-block; /* Ensures the buttons are displayed inline */
+    color: #fff;
 }
 
 .edit-sprint-button a {
-    padding: 8px 15px;
-    background-color: #007bff;
+    background-color: #4d4d4d;
     color: #fff;
-    text-decoration: none;
     border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer; /* Add cursor style to indicate clickable */
     transition: background-color 0.3s ease;
 }
 
-.edit-sprint-button a:hover {
-    background-color: #0056b3;
+.edit-sprint-button:hover {
+    background-color: #8d8d8d;
 }
+
+.delete-sprint-button {
+    background-color: #4d1313;
+    color: #fff;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer; /* Add cursor style to indicate clickable */
+    transition: background-color 0.3s ease;
+}
+
+.delete-sprint-button:hover {
+    background-color: #8b5353;
+}
+
+
+.active-indicator {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: #3498db;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 0 0 0 5px;
+    width: auto; /* Set the width as needed */
+    max-width: 50px; /* Set the maximum width as needed */
+    text-align: center; /* Center the text horizontally */
+    font-size: large;
+  }
+  
+  .finished-indicator {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: #a2d3f3;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 0 0 0 5px;
+    width: auto; /* Set the width as needed */
+    max-width: 80px; /* Set the maximum width as needed */
+    text-align: center; /* Center the text horizontally */
+    font-size: large;
+  }
 

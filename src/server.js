@@ -208,7 +208,7 @@ app.get('/api/sprints', async (req, res) => {
   }
 });
 
-// Route for creating a new sprint
+// Route for updating sprint
 app.post('/api/sprints/updateData', async (req, res) => {
   try {
     const { sprintId, sprintName, startTime, endTime, velocity } = req.body;
@@ -221,10 +221,24 @@ app.post('/api/sprints/updateData', async (req, res) => {
     };
     //await admin.database().ref('users').update(updateData);
     await admin.database().ref(`sprints/${sprintId}`).update(updateData);
-    res.status(200).json({ message: 'User profile updated successfully!'});
+    res.status(200).json({ message: 'Sprint data updated successfully!'});
   } catch (error) {
-    console.error('Error updating user data:', error);
-    res.status(500).json({ error: 'An error occurred while updating user data!' });
+    console.error('Error updating sprint data:', error);
+    res.status(500).json({ error: 'An error occurred while updating sprint data!' });
+  }
+});
+
+// Route for deleting sprint
+app.post('/api/sprints/delete', async (req, res) => {
+  try {
+    const { sprintId } = req.body;
+    console.log(sprintId)
+    //await admin.database().ref('users').update(updateData);
+    await admin.database().ref(`sprints/${sprintId}`).remove();
+    res.status(200).json({ message: 'Sprint removed sucessfully!!'});
+  } catch (error) {
+    console.error('Error removing sprint:', error);
+    res.status(500).json({ error: 'An error occurred while removing sprint!' });
   }
 });
 

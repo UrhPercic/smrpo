@@ -14,8 +14,20 @@ const AddSprint = () => {
         velocity: ""
       });
 
+    
+    
+    useEffect(() => {
+      const fetchSprints = async () => {
+          await fetch(`http://localhost:3001/api/sprints/${projectId}`)
+              .then((response) => response.json())
+              .then(setProjectSprints);
+      };
+      fetchSprints();
+      console.log(projectSprints);
+    }, [formData]);
+
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+      setFormData({ ...formData, [e.target.name]: e.target.value });
     };
     
     const handleSubmit = async (e) => {
@@ -55,6 +67,25 @@ const AddSprint = () => {
           return;
         }
 
+         // Check for overlapping sprints
+        const hasOverlap = projectSprints.some(sprint => {
+          const sprintStart = new Date(sprint.startTime);
+          const sprintEnd = new Date(sprint.endTime);
+          const newSprintStart = new Date(startTime);
+          const newSprintEnd = new Date(endTime);
+
+          // Check if the new sprint overlaps with any existing sprint
+          return (newSprintStart >= sprintStart && newSprintStart <= sprintEnd) ||
+                (newSprintEnd >= sprintStart && newSprintEnd <= sprintEnd) ||
+                (newSprintStart <= sprintStart && newSprintEnd >= sprintEnd);
+        });
+
+        if (hasOverlap){
+          alert("There is already a sprint existing in the selected time period!")
+          return;
+        }
+        
+        
         const sprintData = {
             sprintName: formData.sprintName,
             projectId: formData.projectId,
@@ -88,7 +119,7 @@ const AddSprint = () => {
         }
 
     }
-        
+
     return (
       <div className="container">
         <div className="content">

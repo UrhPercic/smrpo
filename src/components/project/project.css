@@ -1,84 +1,155 @@
+:root {
+    --bg-color: #f4f4f4;
+    --primary-color: #2878a9;
+    --delete-color: #D11A2A;
+    --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    --border-radius: 8px;
+    --padding: 1rem;
+    --margin: 1rem;
+}
+
+.scrum-board-container {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: auto;
+    white-space: nowrap;
+}
+
+.cont {
+    overflow: auto;
+    white-space: nowrap;
+}
+
+.column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: var(--padding);
+    box-shadow: var(--box-shadow);
+
+}
+
+.column h3 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.column h4 {
+    white-space: normal;
+    overflow-wrap: break-word;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
 .add-task {
-  background-color: rgb(219, 219, 219);
-  border-radius: 10px;
-  padding: 10px 5px;
+    background-color: #e9ecef;
+    border-radius: 10px;
+    padding: 20px 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
 }
 
 .project-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
-.sprint-section {
-  position: relative;
-  border: 2px solid #ccc;
-  border-radius: 15px;
-  padding: 10px;
-  margin-bottom: 10px;
+/* project.css */
+.preserve-whitespace {
+    white-space: pre-wrap;
 }
 
-.sprint-section h3 {
-  margin-top: 0;
+.column, .sub-column-content {
+
+    margin: 1px;
+    align-items: center;
 }
 
-.progress-bar-container {
-  height: 10px;
-  background-color: #f0f0f0;
-  border-radius: 5px;
-  margin-top: 10px;
-  margin-bottom: 20px;
+.sub-columns-container {
+    display: flex;
+    width: 100%;
 }
 
-.progress-bar {
-  height: 100%;
-  background-color: #3498db;
-  border-radius: 5px;
+.sub-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: var(--padding);
 }
 
-.edit-sprint-button {
-  margin-bottom: 10px;
-  font-size: 14px;
+.story-section {
+    background-color: var(--bg-color);
+    border-radius: var(--border-radius);
+    padding: 5px;
+    margin-bottom: 15px;
+    box-shadow: var(--box-shadow);
+    transition: box-shadow 0.2s ease;
+    height: 180px;
+    width: 150px;
+    overflow: hidden;
+
 }
 
-.edit-sprint-button a {
-  padding: 5px 10px;
-  background-color: #4d4d4d;
-  color: #fff;
-  text-decoration: none;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
-  
+.story-section:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
-.edit-sprint-button a:hover {
-  background-color: #8d8d8d;
+.story-section h4 {
+    color: #2878a9;
+    margin-bottom: 0.75rem;
+    font-size: 1.25rem;
 }
 
-.active-indicator {
-  position: absolute;
-  top: 0;
-  right: 0;
-  background-color: #3498db;
-  color: white;
-  padding: 5px 10px;
-  border-radius: 0 0 0 5px;
-  width: auto; /* Set the width as needed */
-  max-width: 50px; /* Set the maximum width as needed */
-  text-align: center; /* Center the text horizontally */
-  font-size: large;
+.story-section p {
+    color: #333;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
 }
 
-.finished-indicator {
-  position: absolute;
-  top: 0;
-  right: 0;
-  background-color: #a2d3f3;
-  color: white;
-  padding: 5px 10px;
-  border-radius: 0 0 0 5px;
-  width: auto; /* Set the width as needed */
-  max-width: 80px; /* Set the maximum width as needed */
-  text-align: center; /* Center the text horizontally */
-  font-size: large;
+.story-section p:last-child {
+    margin-bottom: 0;
 }
+
+.story-section .priority, .story-section .businessValue {
+    display: inline-block;
+    padding: 0.5rem 0.5rem;
+    margin-right: 0.5rem;
+    border-radius: 5px;
+    background-color: #f4f4f4;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+}
+
+.story-section .priority {
+    color: #fff;
+    background-color: #f39c12;
+}
+
+.story-section .businessValue {
+    color: #fff;
+    background-color: #27ae60;
+}
+
+.story-section .test {
+    font-style: italic;
+    color: #007bff;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -39,8 +39,41 @@ const Sprints = () => {
     const handleAddUserStory = () => {
         navigate(`/projects/add-userStory/${projectId}`);
     };
-    const handleSprints = () => {
-        navigate(`/projects/listSprints/${projectId}`);
+
+    async function deleteSprint(sprintId){
+        // Your deletion logic here
+        // Initialize Firebase Admin SDK
+        console.log(sprintId)
+        const sendData = {
+            sprintId: sprintId
+        };
+
+        // Send the project data to the server1
+        try {
+            const response = await fetch("http://localhost:3001/api/sprints/delete", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(sendData),
+            });
+        
+            if (response.ok) {
+            const data = await response.json();
+            alert("Sprint removed successfully");
+            navigate(`/home`)
+            // Optionally reset form here or navigate to another page
+            } else {
+            const errorData = await response.json();
+            alert("Failed to remove sprint: " + errorData.error);
+            }
+        } catch (error) {
+            console.error("Error removing sprint:", error);
+            alert("An error occurred. Please try again.");
+        }
+
+
+        console.log("Sprint deleted + ", sprintId);
     };
 
 
@@ -74,9 +107,6 @@ const Sprints = () => {
                                     Add Story
                                     <i className="fa-solid fa-book"></i>
                                 </button>
-                                <button onClick={handleSprints} className="default-button">
-                                    Sprints
-                                </button>
                                 <button onClick={handleAddSprint} className="default-button">
                                     Add Sprint
                                     <i class="fa-solid fa-plus"></i>
@@ -89,43 +119,55 @@ const Sprints = () => {
 
                         {/* Display fetched sprints as a list */}
                         <div className="sprints-list">
-                            <h2>Sprints:</h2>
-                            {projectSprints.map(sprint => {
-                                    const startDateTime = new Date(sprint.startTime);
-                                    const endDateTime = new Date(sprint.endTime);
-                                    const currentDateTime = new Date();
-                                    const isActive = currentDateTime >= startDateTime && currentDateTime <= endDateTime;
+              <h2>Sprints:</h2>
+              {projectSprints
+              .slice() // Create a copy of the array to avoid mutating the original
+              .sort((a, b) => new Date(a.startTime) - new Date(b.startTime))
+              .map(sprint => {
+                const startDateTime = new Date(sprint.startTime);
+                const endDateTime = new Date(sprint.endTime);
+                const currentDateTime = new Date();
+                const isActive = currentDateTime >= startDateTime && currentDateTime <= endDateTime;
+                const isFinished = currentDateTime >= endDateTime;
+                
+                const sprintSectionStyle = {
+                  border: isActive ? '2px solid #3498db' : '2px solid #ccc',
+                  borderRadius: '5px',
+                  padding: '10px',
+                  marginBottom: '10px'
+                };
+                
+                // Calculate progress percentage
+                const totalTime = endDateTime - startDateTime;
+                const elapsedTime = currentDateTime - startDateTime;
+                const progress = isActive ? (elapsedTime / totalTime) * 100 : 0;
+                
+                
 
-                                    const sprintSectionStyle = {
-                                        border: isActive ? '2px solid green' : '2px solid #ccc',
-                                        borderRadius: '5px',
-                                        padding: '10px',
-                                        marginBottom: '10px'
-                                    };
+                
 
-                                    // Calculate progress percentage
-                                    const totalTime = endDateTime - startDateTime;
-                                    const elapsedTime = currentDateTime - startDateTime;
-                                    const progress = isActive ? (elapsedTime / totalTime) * 100 : 0;
-
-
-                                    return (
-                                        <div key={sprint.id} style={sprintSectionStyle} className="sprint-section">
-                                            <h3>{sprint.sprintName}</h3>
-                                            <p>Start Time: {formatDateTime(sprint.startTime)}</p>
-                                            <p>End Time: {formatDateTime(sprint.endTime)}</p>
-                                            <p>Velocity: {sprint.velocity}</p>
-                                            <div className="progress-bar-container">
-                                                <div className="progress-bar" style={{width: `${progress}%`}}></div>
-                                            </div>
-                                            <div className="edit-sprint-button">
-                                                <Link to={`/projects/edit-sprint/${sprint.id}`}>Edit Sprint</Link>
-                                            </div>
-                                        </div>
-
-                                    )
-                                }
-                            )}
+                return(
+                  <div key={sprint.id} style={sprintSectionStyle} className="sprint-section">
+                  {isActive && <div className="active-indicator">Active</div>}
+                  {isFinished && <div className="finished-indicator">Finished</div>}
+                  <h3>{sprint.sprintName}</h3>
+                  <p>Start Time: {formatDateTime(sprint.startTime)}</p>
+                  <p>End Time: {formatDateTime(sprint.endTime)}</p>
+                  <p>Velocity: {sprint.velocity} pts</p>
+                  <div className="progress-bar-container">
+                    <div className="progress-bar" style={{ width: `${progress}%` }}></div>
+                  </div>
+                  {!isFinished && <div className="edit-sprint-button">
+                    <Link to={`/projects/edit-sprint/${sprint.id}`}>Edit Sprint</Link>
+                  </div>}
+                  {!isFinished && !isActive && 
+                    (<div className="delete-sprint-button" onClick={() => deleteSprint(sprint.id)}>
+                        Delete Sprint
+                    </div>)}
+                </div>
+                )
+              }
+            )}
                         </div>
                     </>
                 )}
