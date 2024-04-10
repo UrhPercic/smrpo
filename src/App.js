@@ -21,6 +21,7 @@ import AddUserStory from "./components/project/userStory/add-userStory";
 import EditStory from "./components/project/userStory/edit-userStory";
 import Sprints from "./components/project/userStory/storyList";
 import DiagramBurnDown from "./components/diagram-burn-down/diagram-burn-down";
+import Wall from "./components/wall/wall";
 
 function App() {
   return (
@@ -70,6 +71,10 @@ function App() {
               <Route
                 path="/projects/listSprints/:projectId"
                 element={<Sprints />}
+              />
+              <Route
+                  path="/projects/wall/:projectId"
+                  element={<Wall />}
               />
             </Route>
           </Routes>

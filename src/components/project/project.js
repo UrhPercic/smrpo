@@ -66,6 +66,9 @@ const Project = () => {
   const handleDiagram = () => {
     navigate(`/projects/diagram/${projectId}`);
   };
+  const handleWall = () => {
+    navigate(`/projects/wall/${projectId}`);
+  };
 
   const onDragEnd = async (result) => {
     const { source, destination, draggableId } = result;
@@ -191,6 +194,9 @@ const Project = () => {
             <div className="project-header">
               <h1>{project.name}</h1>
               <div>
+                <button onClick={handleWall} className="default-button">
+                  Wall
+                </button>
                 <button onClick={handleEdit} className="default-button">
                   Edit Project
                   <i class="fa-solid fa-pen-to-square"></i>

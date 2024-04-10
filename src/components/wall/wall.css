@@ -1,0 +1,40 @@
+.tablink {
+    background-color: #f1f1f1;
+    color: black;
+    float: left;
+    border: solid 1px #ccc;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    font-size: 17px;
+    width: 33.3%;
+}
+
+.tablink.active {
+    background-color: #ccc;
+}
+
+.tabcontent {
+    clear: both;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-top: none;
+}
+
+/* Clear floats after the buttons */
+.tab:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+.messages {
+    margin-top: 20px;
+}
+
+.message-entry {
+    background-color: #f8f8f8;
+    border: 1px solid #e1e1e1;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
