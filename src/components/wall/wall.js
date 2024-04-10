@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from "react";
 import {addData, getData} from "../../db/realtimeDatabase";
 import "./wall.css";
+import {useParams} from "react-router-dom";
 
 const Wall = () => {
     const [activeTab, setActiveTab] = useState('DailyScrum');
@@ -43,7 +44,7 @@ const DailyScrum = ({ addPost, posts }) => {
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
     const [currentUser, setCurrentUser] = useState({});
-
+    const {projectId} = useParams();
 
     const handleChange = (e) => {
         setMessage(e.target.value);
@@ -64,10 +65,14 @@ const DailyScrum = ({ addPost, posts }) => {
         const fetchMessages = async () => {
             try {
                 const fetchedMessages = await getData("/dailyScrumMessages");
-                const formattedMessages = Object.keys(fetchedMessages).map((key) => {
+                const formattedMessages = Object.keys(fetchedMessages).filter((key) =>
+                    fetchedMessages[key].projectId === projectId
+                ).map((key) => {
                     return {
+                        id: key,
                         message: fetchedMessages[key].message,
                         username: fetchedMessages[key].username,
+                        projectId: fetchedMessages[key].projectId,
                     };
                 });
                 setMessages(formattedMessages);
@@ -76,7 +81,7 @@ const DailyScrum = ({ addPost, posts }) => {
             }
         };
         fetchMessages();
-    }, []);
+    }, [projectId]);
     const handleSubmit = async (e) => {
         e.preventDefault();
         console.log("Current user before submitting:", currentUser); // Log current user for debugging
@@ -84,6 +89,7 @@ const DailyScrum = ({ addPost, posts }) => {
         const newMessage = {
             username: currentUser.username || 'testUser',
             message: message,
+            projectId: projectId,
             timestamp: new Date().toISOString()
         };
 
