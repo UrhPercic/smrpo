@@ -18,6 +18,9 @@ const Header = () => {
     if (pathname.startsWith("/projects/diagram/")) {
       return "Diagram burn down";
     }
+    if (pathname.startsWith("/projects/planning-poker/")) {
+      return "Planning poker";
+    }
 
     switch (pathname) {
       case "/":
@@ -30,8 +33,6 @@ const Header = () => {
         return "User Profile";
       case "/add-user":
         return "Add User";
-      case "/planning-poker":
-        return "Planning Poker";
       case "/users":
         return "Users";
       case "/user-profile/edit":

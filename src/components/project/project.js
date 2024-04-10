@@ -67,6 +67,10 @@ const Project = () => {
     navigate(`/projects/diagram/${projectId}`);
   };
 
+  const handlePlanningPokerClick = () => {
+    navigate(`/projects/planning-poker/${projectId}`);
+  };
+
   const onDragEnd = async (result) => {
     const { source, destination, draggableId } = result;
 
@@ -191,6 +195,13 @@ const Project = () => {
             <div className="project-header">
               <h1>{project.name}</h1>
               <div>
+                <button
+                  className="default-button"
+                  onClick={handlePlanningPokerClick}
+                >
+                  <strong>Planning poker</strong>
+                  <i className="fa-solid fa-diamond"></i>
+                </button>
                 <button onClick={handleEdit} className="default-button">
                   Edit Project
                   <i class="fa-solid fa-pen-to-square"></i>
