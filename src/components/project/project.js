@@ -66,6 +66,9 @@ const Project = () => {
   const handleDiagram = () => {
     navigate(`/projects/diagram/${projectId}`);
   };
+  const handleWall = () => {
+    navigate(`/projects/wall/${projectId}`);
+  };
 
   const handlePlanningPokerClick = () => {
     navigate(`/projects/planning-poker/${projectId}`);
@@ -202,6 +205,9 @@ const Project = () => {
                   <strong>Planning poker</strong>
                   <i className="fa-solid fa-diamond"></i>
                 </button>
+                <button onClick={handleWall} className="default-button">
+                  Wall
+                </button>
                 <button onClick={handleEdit} className="default-button">
                   Edit Project
                   <i class="fa-solid fa-pen-to-square"></i>
@@ -229,7 +235,6 @@ const Project = () => {
             </p>
             {/* ADD USERS */}
 
-            {/* Display fetched sprints as a list */}
             <div className="stories-list">
               <DragDropContext onDragEnd={onDragEnd}>
                 <div className="scrum-board-container">
