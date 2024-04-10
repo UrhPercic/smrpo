@@ -35,20 +35,38 @@ const AddUser = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
+    const username = formData.get("username");
     const password = formData.get("hashed_password");
+    const repeatPassword = formData.get("repeat_password");
+
+    if (password !== repeatPassword) {
+      alert("Passwords do not match.");
+      return;
+    }
+
     const hashedPassword = bcrypt.hashSync(password, 10);
 
-    const newUser = {
-      username: formData.get("username"),
-      hashed_password: hashedPassword,
-      name: formData.get("name"),
-      surname: formData.get("surname"),
-      email: formData.get("email"),
-      privilege: formData.get("privilege"),
-      created_at: Date(),
-    };
-
     try {
+      const existingUsers = await getData("/users");
+      const isUsernameTaken = Object.values(existingUsers).some(
+        (user) => user.username === username
+      );
+
+      if (isUsernameTaken) {
+        alert("Username already taken. Please choose a different one.");
+        return;
+      }
+
+      const newUser = {
+        username: username,
+        hashed_password: hashedPassword,
+        name: formData.get("name"),
+        surname: formData.get("surname"),
+        email: formData.get("email"),
+        privilege: formData.get("privilege"),
+        created_at: new Date().toISOString(),
+      };
+
       await addData("/users", newUser);
       alert("User added successfully");
       navigate("/home");
@@ -64,14 +82,21 @@ const AddUser = () => {
         <form onSubmit={handleSubmit}>
           <input type="text" name="username" placeholder="Username" required />
           <input
-            type="text"
+            type="password"
             name="hashed_password"
             placeholder="Password"
             required
           />
+          <input
+            type="password"
+            name="repeat_password"
+            placeholder="Repeat password"
+            required
+          />
           <input type="text" name="name" placeholder="Name" required />
           <input type="text" name="surname" placeholder="Surname" required />
-          <input type="text" name="email" placeholder="Email" required />
+          <input type="email" name="email" placeholder="Email" required />
+
           <select>
             <option value="normal">Normal</option>
             <option value="admin">Admin</option>

@@ -65,13 +65,27 @@ const EditProfile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    try {
+      const allUsers = await getData("/users");
+      const usernameExists = Object.values(allUsers).some(
+        (u) => u.username === formData.username && u.id != userDetails.id
+      );
+
+      if (usernameExists) {
+        alert("Username already exists. Please choose a different one.");
+        return;
+      }
+    } catch (error) {
+      console.error("Error during user update:", error);
+      alert("An error occurred. Please try again.");
+      return;
+    }
+
     const updatedData = {
       ...formData,
       privilege: isDisabled ? "Disabled" : "Normal",
       userID: userDetails.id,
     };
-
-    console.log("Sending data:", updatedData);
 
     try {
       const response = await fetch(
