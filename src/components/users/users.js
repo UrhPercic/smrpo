@@ -34,10 +34,12 @@ const Users = () => {
       try {
         const allUsers = await getData("/users");
         if (allUsers) {
-          const usersArray = Object.keys(allUsers).map((key) => ({
-            id: key,
-            ...allUsers[key],
-          }));
+          const usersArray = Object.keys(allUsers)
+            .map((key) => ({
+              id: key,
+              ...allUsers[key],
+            }))
+            .filter((user) => user.privilege !== "admin");
           setUsers(usersArray);
         }
       } catch (error) {

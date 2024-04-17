@@ -28,6 +28,11 @@ const Login = () => {
         const user = userEntry ? { id: userEntry[0], ...userEntry[1] } : null;
 
         if (user && bcrypt.compareSync(password, user.hashed_password)) {
+          if (user.privilege === "Disabled") {
+            alert("User is disabled. Login unsuccessful.");
+            return;
+          }
+
           const lastLogin = user.lastLogin || "First login";
           localStorage.setItem("lastLogin", lastLogin);
 
