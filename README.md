@@ -16,6 +16,8 @@ In the project directory, you can run:
 ## npm install @fortawesome/fontawesome-free
 ## npm install bcryptjs
 ## npm install firebase-admin
+## npm install react-markdown react-simplemde-editor simplemde
+
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
