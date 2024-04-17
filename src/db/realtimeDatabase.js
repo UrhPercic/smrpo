@@ -1,4 +1,12 @@
-import { getDatabase, ref, set, push, get, child } from "firebase/database";
+import {
+  getDatabase,
+  ref,
+  set,
+  push,
+  get,
+  child,
+  update,
+} from "firebase/database";
 import app from "./firebase";
 
 const db = getDatabase(app);
@@ -22,5 +30,15 @@ export const getData = async (path) => {
   } catch (error) {
     console.error(error);
     return null;
+  }
+};
+
+export const updateData = async (path, data) => {
+  const dbRef = ref(db, path);
+  try {
+    await update(dbRef, data);
+    console.log("Data updated successfully");
+  } catch (error) {
+    console.error("Failed to update data", error);
   }
 };
