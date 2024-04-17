@@ -56,10 +56,11 @@ const AddProjectForm = () => {
 
     // Validate unique roles (PO and KBM) and ensure DOM role can have multiples
     const isValidPO = roleAssignments.PO === 1; // Exactly one PO
-    const isValidKBM = roleAssignments.KBM <= 1; // At most one KBM
+    const isValidKBM = roleAssignments.KBM == 1; // At most one KBM
+    const isValidDOM = roleAssignments.DOM > 0;
     // No need to validate DOM explicitly unless you have a minimum number required
 
-    return isValidPO && isValidKBM;
+    return isValidPO && isValidKBM && isValidDOM;
   };
 
 

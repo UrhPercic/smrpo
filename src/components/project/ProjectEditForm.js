@@ -18,26 +18,32 @@ const ProjectEditForm = () => {
       fetch(`http://localhost:3001/api/projects/${projectId}`).then(res => res.json()),
       fetch("http://localhost:3001/api/users").then(res => res.json())
     ]).then(([projectData, usersData]) => {
-      const usersArray = projectData.users ? projectData.users.map((user) => {
-        const foundUser = usersData.find(userData => userData.id === user.userId);
-        return {
-          ...user,
-          name: foundUser ? foundUser.name : "Unknown User",
-          roles: Array.isArray(user.roles) ? user.roles : [user.roles].filter(Boolean), // Ensure roles is always an array
-        };
-      }) : [];
-
-      setProjectData({
-        name: projectData.name,
-        description: projectData.description,
-        users: usersArray,
-      });
-
+      if (projectData && Array.isArray(projectData.users)) {
+        const usersArray = projectData.users.map((user) => {
+          const foundUser = usersData.find(u => u.id === user.userId);
+          return {
+            userId: user.userId,
+            name: foundUser ? foundUser.name : "Unknown User",
+            roles: Array.isArray(user.roles) ? user.roles : [user.roles],
+          };
+        });
+        setProjectData({
+          name: projectData.name,
+          description: projectData.description,
+          users: usersArray,
+        });
+      } else {
+        console.error('Unexpected structure for users:', projectData.users);
+      }
+  
       setAvailableUsers(usersData);
     }).catch(error => {
       console.error("Error fetching data:", error);
     });
   }, [projectId]);
+  
+  
+  
 
 
 

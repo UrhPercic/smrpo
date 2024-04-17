@@ -1,7 +1,10 @@
 import React, {useState, useEffect} from "react";
-import {addData, getData} from "../../db/realtimeDatabase";
+import { getData, addData, updateData, deleteData } from "../../db/realtimeDatabase";
 import "./wall.css";
 import {useParams} from "react-router-dom";
+import ReactMarkdown from 'react-markdown';
+import SimpleMDE from "react-simplemde-editor";
+import "simplemde/dist/simplemde.min.css";
 
 const Wall = () => {
     const [activeTab, setActiveTab] = useState('DailyScrum');
@@ -205,8 +208,13 @@ const DailyScrum = ({addPost, posts}) => {
 
 const Documentation = () => {
     const { projectId } = useParams();
-    const [docContent, setDocContent] = useState("");
     const [documentations, setDocumentations] = useState([]);
+    const [editMode, setEditMode] = useState(false);
+    const [newDocContent, setNewDocContent] = useState("");
+
+    useEffect(() => {
+        fetchDocumentation();
+    }, [projectId]);
 
     const fetchDocumentation = async () => {
         const docs = await getData(`/projects/${projectId}/documentation`);
@@ -221,18 +229,32 @@ const Documentation = () => {
         }
     };
 
-    useEffect(() => {
-        fetchDocumentation();
-    }, [projectId]);
-
-    const handleDocChange = (e) => {
-        setDocContent(e.target.value);
+    const handleDocChange = (id, value) => {
+        const newDocs = documentations.map(doc => {
+            if (doc.id === id) {
+                return { ...doc, content: value };
+            }
+            return doc;
+        });
+        setDocumentations(newDocs);
     };
 
-    const handleSave = async () => {
-        await addData(`/projects/${projectId}/documentation`, { content: docContent });
-        alert("Documentation saved.");
-        setDocContent("");
+    const handleSaveAll = async () => {
+        for (const doc of documentations) {
+            await updateData(`/projects/${projectId}/documentation/${doc.id}`, { content: doc.content });
+        }
+        if (newDocContent.trim()) {
+            await addData(`/projects/${projectId}/documentation`, { content: newDocContent });
+            setNewDocContent("");
+        }
+        alert("All changes saved.");
+        setEditMode(false);
+        await fetchDocumentation();
+    };
+
+    const handleDelete = async (id) => {
+        await deleteData(`/projects/${projectId}/documentation/${id}`);
+        alert("Documentation deleted.");
         await fetchDocumentation();
     };
 
@@ -241,41 +263,59 @@ const Documentation = () => {
         if (file) {
             const reader = new FileReader();
             reader.onload = async (e) => {
-                setDocContent(e.target.result);
+                setNewDocContent(e.target.result);
             };
             reader.readAsText(file);
         }
     };
 
-    const handleExport = () => {
+    const handleExportAll = () => {
+        const allDocsContent = documentations.map(doc => `## ${doc.id}\n${doc.content}`).join('\n\n');
         const element = document.createElement("a");
-        const file = new Blob([docContent], { type: 'text/plain' });
+        const file = new Blob([allDocsContent], { type: 'text/markdown' });
         element.href = URL.createObjectURL(file);
-        element.download = "projectDocumentation.txt";
-        document.body.appendChild(element); // Required for this to work in Firefox
+        element.download = "AllProjectDocumentation.md";
+        document.body.appendChild(element);
         element.click();
+    };
+
+    const toggleEditMode = () => {
+        setEditMode(!editMode);
     };
 
     return (
         <div>
             <h3>Documentation</h3>
+            <button onClick={toggleEditMode}>{editMode ? "View Mode" : "Edit Mode"}</button>
+            <button onClick={handleExportAll}>Export All Documentation</button>
             <div className="documentation-list">
                 {documentations.map(doc => (
                     <div key={doc.id} className="documentation-entry">
-                        <p>{doc.content}</p>
+                        {editMode ? (
+                            <>
+                                <SimpleMDE value={doc.content} onChange={(value) => handleDocChange(doc.id, value)} />
+                                <button onClick={() => handleDelete(doc.id)}>Delete</button>
+                            </>
+                        ) : (
+                            <ReactMarkdown>{doc.content}</ReactMarkdown>
+                        )}
                     </div>
                 ))}
             </div>
-            <h4>Add New Documentation</h4>
-            <textarea value={docContent} onChange={handleDocChange} rows="5" cols="50"></textarea>
-            <div>
-                <button onClick={handleSave}>Save New Documentation</button>
-                <input type="file" onChange={handleImport} />
-                <button onClick={handleExport}>Export</button>
-            </div>
+            {editMode && (
+                <>
+                    <div className="new-documentation-entry">
+                        <h4>Add New Documentation</h4>
+                        <SimpleMDE value={newDocContent} onChange={setNewDocContent} />
+                        <input type="file" onChange={handleImport} />
+                    </div>
+                    <button onClick={handleSaveAll}>Save All Changes</button>
+                </>
+            )}
         </div>
     );
 };
+
 
 
 
