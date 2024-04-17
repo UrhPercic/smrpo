@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import bcrypt from "bcryptjs";
-import { getData } from "../../db/realtimeDatabase";
+import { getData, updateData } from "../../db/realtimeDatabase";
 import "./login.css";
 
 const Login = () => {
@@ -28,6 +28,13 @@ const Login = () => {
         const user = userEntry ? { id: userEntry[0], ...userEntry[1] } : null;
 
         if (user && bcrypt.compareSync(password, user.hashed_password)) {
+          const lastLogin = user.lastLogin || "First login";
+          localStorage.setItem("lastLogin", lastLogin);
+
+          await updateData(`/users/${user.id}`, {
+            lastLogin: new Date().toISOString(),
+          });
+
           localStorage.setItem("userId", user.id);
           navigate("/home", { state: { userId: user.id } });
         } else {
