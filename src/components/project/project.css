@@ -91,8 +91,8 @@
     margin-bottom: 15px;
     box-shadow: var(--box-shadow);
     transition: box-shadow 0.2s ease;
-    height: 180px;
-    width: 150px;
+    height: 200px;
+    width: 200px;
     overflow: hidden;
 
 }

@@ -14,8 +14,8 @@ const AddUserStory = () => {
         projectId: projectId,
         description: "",
         test: "",
-        priority: "Low",
-        businessValue: "Must Have",
+        priority: "Must Have",
+        businessValue: "Low",
         status: "Product Backlog1"
     });
 
