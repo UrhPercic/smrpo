@@ -18,13 +18,14 @@ const ProjectEditForm = () => {
       fetch(`http://localhost:3001/api/projects/${projectId}`).then(res => res.json()),
       fetch("http://localhost:3001/api/users").then(res => res.json())
     ]).then(([projectData, usersData]) => {
-      if (projectData && Array.isArray(projectData.users)) {
-        const usersArray = projectData.users.map((user) => {
-          const foundUser = usersData.find(u => u.id === user.userId);
+      if (projectData && typeof projectData.users === 'object' && !Array.isArray(projectData.users)) {
+        // Convert users object into an array
+        const usersArray = Object.entries(projectData.users).map(([userId, roles]) => {
+          const foundUser = usersData.find(u => u.id === userId);
           return {
-            userId: user.userId,
+            userId: userId,
             name: foundUser ? foundUser.name : "Unknown User",
-            roles: Array.isArray(user.roles) ? user.roles : [user.roles],
+            roles: roles,
           };
         });
         setProjectData({
@@ -41,6 +42,7 @@ const ProjectEditForm = () => {
       console.error("Error fetching data:", error);
     });
   }, [projectId]);
+  
   
   
   
