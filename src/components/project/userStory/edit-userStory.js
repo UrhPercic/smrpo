@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getData, updateData } from '../../../db/realtimeDatabase';
+import { getData, updateData, deleteData } from '../../../db/realtimeDatabase';
 
 const EditUserStory = () => {
     const { projectId, storyId } = useParams();
@@ -17,10 +17,14 @@ const EditUserStory = () => {
     useEffect(() => {
         const fetchStory = async () => {
             const storyData = await getData(`/userStory/${storyId}`);
+            console.log("Fetched story data:", storyData); // Check what you receive here
             if (storyData) {
                 setFormData({ ...storyData });
+            } else {
+                console.log("No data found for story ID:", storyId); // Helps check if data is null
             }
         };
+        
         fetchStory();
     }, [storyId]);
 
@@ -31,10 +35,31 @@ const EditUserStory = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        await updateData(`/userStory/${storyId}`, formData);
-        alert('Story updated successfully');
-        navigate(`/projects/${projectId}`);
+        await updateData(`/userStory/${storyId}`, formData)
+            .then(() => {
+                alert('Story updated successfully');
+                navigate(`/project/${projectId}`);
+            })
+            .catch(error => {
+                console.error('Failed to update story:', error);
+                alert('Failed to update story');
+            });
     };
+
+    const handleDelete = async () => {
+        if (window.confirm("Are you sure you want to delete this story?")) {
+            await deleteData(`/userStory/${storyId}`)
+                .then(() => {
+                    alert('Story deleted successfully');
+                    navigate(`/project/${projectId}`);
+                })
+                .catch(error => {
+                    console.error('Failed to delete story:', error);
+                    alert('Failed to delete story');
+                });
+        }
+    };
+    
 
     return (
         <div className="container">
@@ -79,7 +104,8 @@ const EditUserStory = () => {
                         <option>Done</option>
                     </select>
                 </div>
-                <button type="submit" className="btn btn-primary">Update Story</button>
+                <button type="submit" className="btn btn-primary" onClick={handleSubmit}>Update Story</button>
+                <button type="button" className="btn btn-danger" onClick={handleDelete}>Delete Story</button>
             </form>
         </div>
     );

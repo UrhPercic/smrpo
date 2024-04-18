@@ -74,6 +74,12 @@ const Project = () => {
     navigate(`/projects/planning-poker/${projectId}`);
   };
 
+
+  const handleEditStory = (storyId) => {
+    navigate(`/projects/edit-userStory/${storyId}`);
+
+  };
+
   const onDragEnd = async (result) => {
     const { source, destination, draggableId } = result;
 
@@ -149,7 +155,6 @@ const Project = () => {
                       className={`story-section ${
                         snapshot.isDragging ? "dragging-story" : ""
                       }`}
-                      onClick={() => handleCardClick(storyItem)}
                     >
                       <h4>{storyItem.userStoryName}</h4>
                       <p className="description-preview">
@@ -162,6 +167,7 @@ const Project = () => {
                           {storyItem.businessValue}
                         </span>
                       </p>
+                      <button onClick={() => handleEditStory(storyItem.id)} className="edit-story-button">Edit Story</button>
                     </div>
                   )}
                 </Draggable>

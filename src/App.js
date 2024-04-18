@@ -18,7 +18,7 @@ import EditProfile from "./components/user-profile/edit-profile";
 import EditSprint from "./components/project/sprints/edit-sprint";
 import Users from "./components/users/users";
 import AddUserStory from "./components/project/userStory/add-userStory";
-import EditStory from "./components/project/userStory/edit-userStory";
+import EditUserStory from "./components/project/userStory/edit-userStory";
 import Sprints from "./components/project/userStory/storyList";
 import DiagramBurnDown from "./components/diagram-burn-down/diagram-burn-down";
 import Wall from "./components/wall/wall";
@@ -68,8 +68,8 @@ function App() {
                 element={<EditSprint />}
               />
               <Route
-                path="/projects/edit-story/:storyId"
-                element={<EditStory />}
+                path="/projects/edit-userStory/:storyId"
+                element={<EditUserStory />}
               />
               <Route
                 path="/projects/listSprints/:projectId"
