@@ -14,10 +14,20 @@ const AddSprint = () => {
         velocity: ""
       });
 
-
+    
+    
+    useEffect(() => {
+      const fetchSprints = async () => {
+          await fetch(`http://localhost:3001/api/sprints/${projectId}`)
+              .then((response) => response.json())
+              .then(setProjectSprints);
+      };
+      fetchSprints();
+      console.log(projectSprints);
+    }, [formData]);
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+      setFormData({ ...formData, [e.target.name]: e.target.value });
     };
     
     const handleSubmit = async (e) => {
@@ -27,6 +37,20 @@ const AddSprint = () => {
         const startTime = new Date(formData.startTime);
         const endTime = new Date(formData.endTime);
         const currentTime = new Date();
+
+        const vel = Number(formData.velocity);
+
+        console.log(startTime.getDay());
+
+        if (startTime.getDay() == 6 || startTime.getDay() == 0){
+          alert("Start date must be a weekday!")
+          return;
+        }
+
+        if (endTime.getDay() == 6 || endTime.getDay() == 0){
+          alert("End date must be a weekday!")
+          return;
+        }
 
         if (startTime > endTime){
           alert("Start date cannot be before end date!")
@@ -38,15 +62,30 @@ const AddSprint = () => {
           return;
         }
 
-        if (isNaN(formData.velocity)){
-          alert("The velocity should be a number!")
+        if (isNaN(formData.velocity) || (vel < 0) || (vel > 1000)){
+          alert("The velocity should be a positive number (0 - 999)!")
           return;
         }
 
-        
-        console.log(projectSprints);
-        
+         // Check for overlapping sprints
+        const hasOverlap = projectSprints.some(sprint => {
+          const sprintStart = new Date(sprint.startTime);
+          const sprintEnd = new Date(sprint.endTime);
+          const newSprintStart = new Date(startTime);
+          const newSprintEnd = new Date(endTime);
 
+          // Check if the new sprint overlaps with any existing sprint
+          return (newSprintStart >= sprintStart && newSprintStart <= sprintEnd) ||
+                (newSprintEnd >= sprintStart && newSprintEnd <= sprintEnd) ||
+                (newSprintStart <= sprintStart && newSprintEnd >= sprintEnd);
+        });
+
+        if (hasOverlap){
+          alert("There is already a sprint existing in the selected time period!")
+          return;
+        }
+        
+        
         const sprintData = {
             sprintName: formData.sprintName,
             projectId: formData.projectId,
@@ -80,7 +119,7 @@ const AddSprint = () => {
         }
 
     }
-        
+
     return (
       <div className="container">
         <div className="content">
