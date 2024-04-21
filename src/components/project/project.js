@@ -1,27 +1,29 @@
 import React, { useState, useEffect } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { getData } from "../../db/realtimeDatabase";
-import "./project.css";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import AddTask from "./add-task";
+import StoryTasks from "./StoryTasks"; // Import the StoryTasks component
 
 const Project = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
-  const [project, setProject] = useState({ users: [] }); // Initialize users as an empty array
+  const [project, setProject] = useState({ users: [] });
   const [story, setStory] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showAddTaskForm, setShowAddTaskForm] = useState(false);
+  const [selectedStory, setSelectedStory] = useState(null);
 
   useEffect(() => {
     const fetchProject = async () => {
       const fetchedProject = await getData(`/projects/${projectId}`);
       if (fetchedProject) {
-        console.log("Fetched project:", fetchedProject); // Log the fetched project
         setProject(fetchedProject);
       }
     };
 
     const fetchStories = async () => {
-      setIsLoading(true); // Start loading
+      setIsLoading(true);
       fetch(
         `https://smrpo-acd88-default-rtdb.europe-west1.firebasedatabase.app/userStory.json`
       )
@@ -34,21 +36,18 @@ const Project = () => {
             }))
             .filter((story) => story.projectId === projectId);
           setStory(storiesArray);
-          setIsLoading(false); // Data loaded
+          setIsLoading(false);
         })
         .catch((error) => {
           console.error("Failed to fetch stories:", error);
-          setStory([]); // Fallback in case of error
-          setIsLoading(false); // Data loading failed
+          setStory([]);
+          setIsLoading(false);
         });
     };
 
     fetchStories();
     fetchProject();
   }, [projectId]);
-  if (isLoading) {
-    return <div>Loading stories...</div>;
-  }
 
   const handleEdit = () => {
     navigate(`/projects/edit/${projectId}`);
@@ -57,12 +56,15 @@ const Project = () => {
   const handleAddSprint = () => {
     navigate(`/projects/add-sprint/${projectId}`);
   };
+
   const handleAddUserStory = () => {
     navigate(`/projects/add-userStory/${projectId}`);
   };
+
   const handleSprints = () => {
     navigate(`/projects/listSprints/${projectId}`);
   };
+
   const handleDiagram = () => {
     navigate(`/projects/diagram/${projectId}`);
   };
@@ -70,49 +72,40 @@ const Project = () => {
   const onDragEnd = async (result) => {
     const { source, destination, draggableId } = result;
 
-    if (!destination) return; // dropped outside a droppable area
+    if (!destination) return;
 
     const storyDragged = story.find((s) => s.id === draggableId);
     if (!storyDragged) return;
 
     const updatedStory = { ...storyDragged, status: destination.droppableId };
 
-    await updateStoryInBackend(updatedStory);
+    // Placeholder logic for updating story in backend
+    console.log("Updating story in backend:", updatedStory);
 
     const newStories = story.filter((s) => s.id !== draggableId);
     newStories.splice(destination.index, 0, updatedStory);
-    console.log("Old state:", story);
-    console.log("New state:", newStories);
     setStory(newStories);
     console.log(
       `Item ${draggableId} moved from ${source.droppableId} to ${destination.droppableId}`
     );
   };
 
-  const updateStoryInBackend = async (storyToUpdate) => {
-    try {
-      const response = await fetch(
-        `https://smrpo-acd88-default-rtdb.europe-west1.firebasedatabase.app/userStory/${storyToUpdate.id}.json`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(storyToUpdate),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to update the story.");
-      }
-      console.log("Story updated successfully:", storyToUpdate);
-    } catch (error) {
-      console.error("Error updating story:", error);
-    }
+  const handleAddTask = (selectedStory) => {
+    setSelectedStory(selectedStory);
+    setShowAddTaskForm(true);
   };
 
   const handleCardClick = (storyItem) => {
     console.log("Card clicked:", storyItem);
+  };
+
+  const handleViewStory = (storyItem) => {
+    // Navigate to the StoryTasks component with the story ID as a route parameter
+    navigate(`/projects/${projectId}/story-tasks/${storyItem.id}`);
+  };
+
+  const toggleAddTaskForm = () => {
+    setShowAddTaskForm(!showAddTaskForm);
   };
 
   const Column = ({ title, status, stories, subColumns }) => {
@@ -142,7 +135,6 @@ const Project = () => {
                       className={`story-section ${
                         snapshot.isDragging ? "dragging-story" : ""
                       }`}
-                      onClick={() => handleCardClick(storyItem)}
                     >
                       <h4>{storyItem.userStoryName}</h4>
                       <p className="description-preview">
@@ -155,6 +147,19 @@ const Project = () => {
                           {storyItem.businessValue}
                         </span>
                       </p>
+
+                      <button
+                        className="add-task-button"
+                        onClick={() => handleAddTask(storyItem)}
+                      >
+                        Add Task
+                      </button>
+                      <button
+                        className="view-button"
+                        onClick={() => handleViewStory(storyItem)}
+                      >
+                        View
+                      </button>
                     </div>
                   )}
                 </Draggable>
@@ -164,6 +169,7 @@ const Project = () => {
         )}
       </Droppable>
     );
+
     return (
       <div className="column">
         <h3>{title}</h3>
@@ -193,32 +199,28 @@ const Project = () => {
               <div>
                 <button onClick={handleEdit} className="default-button">
                   Edit Project
-                  <i class="fa-solid fa-pen-to-square"></i>
                 </button>
-                <button onClick={handleAddUserStory} className="default-button">
+                <button
+                  onClick={handleAddUserStory}
+                  className="default-button"
+                >
                   Add Story
-                  <i className="fa-solid fa-book"></i>
                 </button>
                 <button onClick={handleSprints} className="default-button">
                   Sprints
-                  <i class="fa-solid fa-person-running"></i>
                 </button>
                 <button onClick={handleDiagram} className="default-button">
                   Diagram
-                  <i class="fa-solid fa-chart-simple"></i>
                 </button>
                 <button onClick={handleAddSprint} className="default-button">
                   Add Sprint
-                  <i class="fa-solid fa-plus"></i>
                 </button>
               </div>
             </div>
             <p className="preserve-whitespace">
               Description: {project.description}
             </p>
-            {/* ADD USERS */}
 
-            {/* Display fetched sprints as a list */}
             <div className="stories-list">
               <DragDropContext onDragEnd={onDragEnd}>
                 <div className="scrum-board-container">
@@ -249,6 +251,17 @@ const Project = () => {
           </>
         )}
       </div>
+      {/* Conditionally render the AddTask component within a popup */}
+      {showAddTaskForm && (
+        <div className="popup-container">
+          <div className="popup">
+            <span className="close" onClick={toggleAddTaskForm}>
+              &times;
+            </span>
+            <AddTask projectId={projectId} story={selectedStory} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

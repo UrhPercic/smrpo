@@ -21,6 +21,7 @@ import AddUserStory from "./components/project/userStory/add-userStory";
 import EditStory from "./components/project/userStory/edit-userStory";
 import Sprints from "./components/project/userStory/storyList";
 import DiagramBurnDown from "./components/diagram-burn-down/diagram-burn-down";
+import StoryTasks from "./components/project/StoryTasks"; // Import the StoryTasks component
 
 function App() {
   return (
@@ -71,6 +72,11 @@ function App() {
                 path="/projects/listSprints/:projectId"
                 element={<Sprints />}
               />
+              <Route
+                path="/projects/:projectId/story-tasks/:storyId"
+                element={<StoryTasks />}
+              />{" "}
+              {/* Add route for StoryTasks */}
             </Route>
           </Routes>
         </div>

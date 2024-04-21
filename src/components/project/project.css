@@ -1,3 +1,41 @@
+
+.add-task-button {
+    background-color: var(--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: var(--border-radius);
+    padding: 0.5rem 1rem;
+    margin-top: 0.5rem;
+    cursor: pointer;
+}
+
+.add-task-form-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: var(--border-radius);
+    padding: var(--padding);
+    box-shadow: var(--box-shadow);
+    z-index: 999;
+}
+
+.add-task-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.add-task-form h2 {
+    margin-bottom: 1rem;
+}
+
+.add-task-form button {
+    margin-top: 1rem;
+}
+
+/* Retain existing styles */
 :root {
     --bg-color: #f4f4f4;
     --primary-color: #2878a9;
@@ -61,7 +99,6 @@
     margin-bottom: 20px;
 }
 
-/* project.css */
 .preserve-whitespace {
     white-space: pre-wrap;
 }
@@ -103,14 +140,14 @@
 
 .story-section h4 {
     color: #2878a9;
-    margin-bottom: 0.75rem;
-    font-size: 1.25rem;
+    margin-bottom: 0.5rem; 
+    font-size: 1rem; 
 }
 
 .story-section p {
     color: #333;
-    margin-bottom: 0.5rem;
-    font-size: 1rem;
+    margin-bottom: 0.25rem; 
+    font-size: 0.75rem;
 }
 
 .story-section p:last-child {
@@ -140,16 +177,3 @@
     font-style: italic;
     color: #007bff;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
