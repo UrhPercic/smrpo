@@ -39,6 +39,19 @@ const AddUser = () => {
     const password = formData.get("hashed_password");
     const repeatPassword = formData.get("repeat_password");
 
+    if (
+      password.length < 12 ||
+      !/[A-Z]/.test(password) ||
+      !/[a-z]/.test(password) ||
+      !/[0-9]/.test(password) ||
+      !/[!@#$%^&*]/.test(password)
+    ) {
+      alert(
+        "Password must be at least 12 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character."
+      );
+      return;
+    }
+
     if (password !== repeatPassword) {
       alert("Passwords do not match.");
       return;
@@ -96,8 +109,7 @@ const AddUser = () => {
           <input type="text" name="name" placeholder="Name" required />
           <input type="text" name="surname" placeholder="Surname" required />
           <input type="email" name="email" placeholder="Email" required />
-
-          <select>
+          <select name="privilege">
             <option value="normal">Normal</option>
             <option value="admin">Admin</option>
           </select>

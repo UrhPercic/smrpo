@@ -44,9 +44,17 @@ const Header = () => {
 
   const title = getTitle(location.pathname);
 
+  const lastLogin = localStorage.getItem("lastLogin");
+  const lastLoginDate =
+    lastLogin == "First login"
+      ? lastLogin
+      : new Date(lastLogin).toLocaleString();
+
   return (
     <header>
-      <h1>SMRPO</h1>
+      <h1>
+        SMRPO {location.pathname !== "/" && ` - Last Login: ${lastLoginDate}`}
+      </h1>
       <h1>{title}</h1>
     </header>
   );

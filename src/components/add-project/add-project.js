@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { getDatabase, ref, push } from "firebase/database";
 // Import Bootstrap CSS in your main file if not already imported
 // import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -44,60 +45,54 @@ const AddProjectForm = () => {
 
   // Validation function
   const validateRoles = () => {
-    const rolesCount = { ProjectOwner: 0, ScrumMaster: 0, DevelopmentTeamMember: 0 };
+    // Adjust role counts based on your application's rules
+    const roleAssignments = { PO: 0, KBM: 0, DOM: 0 };
 
     formData.users.forEach(user => {
-      if (user.role === "Project Owner") rolesCount.ProjectOwner += 1;
-      if (user.role === "Scrum Master") rolesCount.ScrumMaster += 1;
-      if (user.role === "Development Team Member") rolesCount.DevelopmentTeamMember += 1;
+      if (user.role === "Project Owner") roleAssignments.PO += 1;
+      if (user.role === "Scrum Master") roleAssignments.KBM += 1;
+      if (user.role === "Development Team Member") roleAssignments.DOM += 1;
     });
 
-    // Check if each role has at least one member
-    return rolesCount.ProjectOwner > 0 && rolesCount.ScrumMaster > 0 && rolesCount.DevelopmentTeamMember > 0;
+    // Validate unique roles (PO and KBM) and ensure DOM role can have multiples
+    const isValidPO = roleAssignments.PO === 1; // Exactly one PO
+    const isValidKBM = roleAssignments.KBM == 1; // At most one KBM
+    const isValidDOM = roleAssignments.DOM > 0;
+    // No need to validate DOM explicitly unless you have a minimum number required
+
+    return isValidPO && isValidKBM && isValidDOM;
   };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Validate roles before submitting
+  
     if (!validateRoles()) {
-      alert("You must have at least 1 Project Owner, 1 Scrum Master, and 1 Developer.");
-      return; // Stop the form submission
+      alert("Please ensure the roles are correctly assigned according to the rules.");
+      return;
     }
-
-    // Format the project data to be sent to the server
+  
+    // Prepare projectData with rolesByUser as before
     const projectData = {
       name: formData.name,
       description: formData.description,
-      users: formData.users.map(user => ({
-        userId: user.userId,
-        role: user.role
-      }))
+      users: formData.users.reduce((acc, { userId, role }) => {
+        (acc[userId] = acc[userId] || []).push(role);
+        return acc;
+      }, {}),
     };
-
-    // Send the project data to the server
-    try {
-      const response = await fetch("http://localhost:3001/api/projects/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(projectData),
+  
+    const db = getDatabase();
+    push(ref(db, 'projects'), projectData)
+      .then(() => alert("Project added successfully"))
+      .catch((error) => {
+        console.error("Failed to add project:", error);
+        alert("Failed to add project: " + error.message);
       });
-
-      if (response.ok) {
-        const data = await response.json();
-        alert("Project added successfully: " + data.projectId);
-        // Optionally reset form here or navigate to another page
-      } else {
-        const errorData = await response.json();
-        alert("Failed to add project: " + errorData.error);
-      }
-    } catch (error) {
-      console.error("Error submitting project:", error);
-      alert("An error occurred. Please try again.");
-    }
   };
+  
+
+
 
   return (
     <div className="container mt-5">

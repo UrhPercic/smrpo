@@ -15,7 +15,8 @@
 }
 
 .disabled-user {
-  border: 1px solid rgb(239, 53, 53);
+  background-color: rgb(239, 53, 53);
+  color: white;
 }
 
 .user:hover {

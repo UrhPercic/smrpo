@@ -62,9 +62,18 @@ const Project = () => {
   const handleDiagram = () => {
     navigate(`/projects/diagram/${projectId}`);
   };
+  const handleWall = () => {
+    navigate(`/projects/wall/${projectId}`);
+  };
 
   const handlePlanningPokerClick = () => {
     navigate(`/projects/planning-poker/${projectId}`);
+  };
+
+
+  const handleEditStory = (storyId) => {
+    navigate(`/projects/edit-userStory/${storyId}`);
+
   };
 
   const onDragEnd = async (result) => {
@@ -142,7 +151,6 @@ const Project = () => {
                       className={`story-section ${
                         snapshot.isDragging ? "dragging-story" : ""
                       }`}
-                      onClick={() => handleCardClick(storyItem)}
                     >
                       <h4>{storyItem.userStoryName}</h4>
                       <p className="description-preview">
@@ -155,6 +163,7 @@ const Project = () => {
                           {storyItem.businessValue}
                         </span>
                       </p>
+                      <button onClick={() => handleEditStory(storyItem.id)} className="edit-story-button">Edit Story</button>
                     </div>
                   )}
                 </Draggable>
@@ -198,6 +207,9 @@ const Project = () => {
                   <strong>Planning poker</strong>
                   <i className="fa-solid fa-diamond"></i>
                 </button>
+                <button onClick={handleWall} className="default-button">
+                  Wall
+                </button>
                 <button onClick={handleEdit} className="default-button">
                   Edit Project
                   <i class="fa-solid fa-pen-to-square"></i>
@@ -221,7 +233,6 @@ const Project = () => {
             </p>
             {/* ADD USERS */}
 
-            {/* Display fetched sprints as a list */}
             <div className="stories-list">
               <DragDropContext onDragEnd={onDragEnd}>
                 <div className="scrum-board-container">

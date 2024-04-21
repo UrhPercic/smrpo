@@ -18,26 +18,37 @@ const ProjectEditForm = () => {
       fetch(`http://localhost:3001/api/projects/${projectId}`).then(res => res.json()),
       fetch("http://localhost:3001/api/users").then(res => res.json())
     ]).then(([projectData, usersData]) => {
-      const usersArray = projectData.users ? Object.entries(projectData.users).map(([userId, userDetails]) => {
-        const user = usersData.find(user => user.id === userId);
-        return {
-          userId,
-          name: user ? user.name : "Unknown User",
-          ...userDetails
-        };
-      }) : [];
-
-      setProjectData({
-        name: projectData.name,
-        description: projectData.description,
-        users: usersArray
-      });
-
+      if (projectData && typeof projectData.users === 'object' && !Array.isArray(projectData.users)) {
+        // Convert users object into an array
+        const usersArray = Object.entries(projectData.users).map(([userId, roles]) => {
+          const foundUser = usersData.find(u => u.id === userId);
+          return {
+            userId: userId,
+            name: foundUser ? foundUser.name : "Unknown User",
+            roles: roles,
+          };
+        });
+        setProjectData({
+          name: projectData.name,
+          description: projectData.description,
+          users: usersArray,
+        });
+      } else {
+        console.error('Unexpected structure for users:', projectData.users);
+      }
+  
       setAvailableUsers(usersData);
     }).catch(error => {
       console.error("Error fetching data:", error);
     });
   }, [projectId]);
+  
+  
+  
+  
+
+
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -46,16 +57,48 @@ const ProjectEditForm = () => {
 
   const addNewUser = () => {
     if (!newUserId || !newUserRole) return;
-    const userToAdd = availableUsers.find(user => user.id === newUserId);
-    if (userToAdd) {
-      setProjectData(prevData => ({
-        ...prevData,
-        users: [...prevData.users, { userId: userToAdd.id, role: newUserRole }]
-      }));
-      setNewUserId('');
-      setNewUserRole('');
+    
+    // Find user details from availableUsers
+    const userToAddDetails = availableUsers.find(user => user.id === newUserId);
+    if (!userToAddDetails) {
+      console.error('User details not found');
+      return;
     }
+    
+    // Prepare a new or updated user object
+    let updatedUsers = [...projectData.users];
+    const existingUserIndex = updatedUsers.findIndex(user => user.userId === newUserId);
+  
+    if (existingUserIndex !== -1) {
+      // User already exists, append role if it's new
+      const existingRoles = updatedUsers[existingUserIndex].roles;
+      if (!existingRoles.includes(newUserRole)) {
+        updatedUsers[existingUserIndex].roles = [...existingRoles, newUserRole];
+      }
+    } else {
+      // New user for the project
+      updatedUsers.push({
+        userId: newUserId,
+        name: userToAddDetails.name,
+        roles: [newUserRole],
+      });
+    }
+  
+    setProjectData(prevData => ({
+      ...prevData,
+      users: updatedUsers
+    }));
+  
+    // Optionally reset the form fields if needed
+    setNewUserId('');
+    setNewUserRole('');
   };
+  
+
+
+
+
+
 
   const removeUser = (userIdToRemove) => {
     setProjectData(prevData => ({
@@ -66,6 +109,14 @@ const ProjectEditForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validation for exactly one Product Owner without other roles
+    const productOwners = projectData.users.filter(user => user.roles.includes("Project Owner"));
+    if (productOwners.length !== 1 || (productOwners.length === 1 && productOwners[0].roles.length > 1)) {
+      alert("There must be exactly one Product Owner, and they cannot have any other roles.");
+      return;
+    }
+
     try {
       const response = await fetch(`http://localhost:3001/api/projects/update/${projectId}`, {
         method: "POST",
@@ -83,6 +134,7 @@ const ProjectEditForm = () => {
       console.error("Error updating project:", error);
       alert("An error occurred while updating the project.");
     }
+
   };
 
   return (
@@ -115,19 +167,27 @@ const ProjectEditForm = () => {
         <h4>Project Users</h4>
         {projectData.users.map((user, index) => (
           <div key={index} className="d-flex justify-content-between align-items-center mb-2">
-            <span>{`${user.name} (${user.role})`}</span>
+            <span>{`${user.name} (${user.roles.join(", ")})`}</span>
             <button type="button" className="btn btn-danger btn-sm" onClick={() => removeUser(user.userId)}>Remove</button>
           </div>
         ))}
 
+
+
+
+
+
         {/* Add User and Role selection with more spacing */}
         <div className="mb-4"> {/* Increase spacing to the next field */}
           <label htmlFor="userSelect" className="form-label">Select User to Add</label>
+          {/* Remove filtering that excludes already selected users */}
           <select id="userSelect" className="form-select" value={newUserId} onChange={e => setNewUserId(e.target.value)}>
             <option value="">Select User</option>
-            {availableUsers.filter(au => !projectData.users.some(u => u.userId === au.id))
-              .map(user => <option key={user.id} value={user.id}>{user.name}</option>)}
+            {availableUsers.map(user => (
+              <option key={user.id} value={user.id}>{user.name}</option>
+            ))}
           </select>
+
         </div>
 
         <div className="mb-4"> {/* Maintain consistent spacing for the role selection */}
