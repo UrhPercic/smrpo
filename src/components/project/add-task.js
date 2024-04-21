@@ -2,23 +2,20 @@ import React, { useState, useEffect } from "react";
 import { addData } from "../../db/realtimeDatabase";
 import { useNavigate, useParams } from "react-router-dom";
 import "./project.css";
+import StoryTasks from "./StoryTasks";
 
-const AddTask = () => {
+
+const AddTask = ({ projectId, story }) => {
   const navigate = useNavigate();
-  const { projectId } = useParams();
   const [taskData, setTaskData] = useState({
     name: "",
-    description: "", 
-    projected_time: "", //predviden cas, user inputs?
-    user_story_id: "", //ni se u bzis kip
-    created_at: "", //local tim
+    description: "",
+    projected_time: 0, // Change to integer type
+    user_story_id: story ? story.id : "",
+    created_at: "",
   });
 
-  
-  const currentUserId = localStorage.getItem("userId");
-
   useEffect(() => {
-    
     const currentDateTime = new Date().toISOString();
     setTaskData((prevData) => ({
       ...prevData,
@@ -35,12 +32,10 @@ const AddTask = () => {
     event.preventDefault();
 
     try {
-      
-      await addData(`/tasks`, taskData); 
+      await addData(`/tasks`, taskData);
       navigate(`/projects/${projectId}`);
     } catch (error) {
       console.error("woops:", error);
-      
     }
   };
 
@@ -48,7 +43,6 @@ const AddTask = () => {
     <div className="container">
       <div className="content">
         <form onSubmit={handleSubmit}>
-          {}
           <div className="form-group">
             <label htmlFor="name">Name:</label>
             <input
@@ -71,9 +65,9 @@ const AddTask = () => {
             ></textarea>
           </div>
           <div className="form-group">
-            <label htmlFor="projected_time">Projected Time:</label>
+            <label htmlFor="projected_time">Projected Time (hours):</label>
             <input
-              type="datetime-local"
+              type="number" // Change input type to number
               name="projected_time"
               id="projected_time"
               value={taskData.projected_time}
@@ -82,7 +76,7 @@ const AddTask = () => {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="user_story_id">User Story ID, ker ga se ni u bazi lol:</label>
+            <label htmlFor="user_story_id">User Story ID:</label>
             <input
               type="text"
               name="user_story_id"
