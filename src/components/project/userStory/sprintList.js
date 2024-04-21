@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react";
 import {Link, useParams, useNavigate} from "react-router-dom";
 import {getData} from "../../../db/realtimeDatabase";
-import "./storyList.css";
+import "./sprintList.css";
 
 const Sprints = () => {
     const {projectId} = useParams();
@@ -158,7 +158,7 @@ const Sprints = () => {
                     <div className="progress-bar" style={{ width: `${progress}%` }}></div>
                   </div>
                   {!isFinished && <div className="edit-sprint-button">
-                    <Link to={`/projects/edit-sprint/${sprint.id}`}>Edit Sprint</Link>
+                    <Link to={`/projects/edit-sprint/${projectId}/${sprint.id}`}>Edit Sprint</Link>
                   </div>}
                   {!isFinished && !isActive && 
                     (<div className="delete-sprint-button" onClick={() => deleteSprint(sprint.id)}>

@@ -5,8 +5,9 @@ import "./edit-sprint.css";
 
 const EditSprint = () => {
 
-  const { sprintId } = useParams();
+  const { projectId, sprintId } = useParams();
   const [sprints, setSprints] = useState([]);
+  const [projectSprints, setProjectSprints] = useState([]);
   const [formData, setFormData] = useState({
       sprintName: "",
       startTime: "",
@@ -49,8 +50,20 @@ const EditSprint = () => {
         }
     };
     
-    fetchSprints();
+    const fetchAllSprints = async () => {
+        await fetch(`http://localhost:3001/api/sprints/${projectId}`)
+            .then((response) => response.json())
+            .then((sprints) => {
+              // Filter out the sprint with the excluded sprintId
+              const filteredSprints = sprints.filter((sprint) => sprint.id !== sprintId);
+              // Set the filtered sprints to state
+              setProjectSprints(filteredSprints);
+          })
+    };
 
+    fetchSprints();
+    fetchAllSprints();
+    console.log(projectSprints);
     // Find the object with the specific ID
     
     console.log(isActive);
@@ -58,7 +71,7 @@ const EditSprint = () => {
     console.log(sprintId);
     //console.log(foundObject);
     
-  }, []);
+  }, [formData.startTime]);
 
   const handleChange = (e) => {
     setFormData({
@@ -96,7 +109,23 @@ const EditSprint = () => {
       return;
     }
   
+    // Check for overlapping sprints
+    const hasOverlap = projectSprints.some(sprint => {
+      const sprintStart = new Date(sprint.startTime);
+      const sprintEnd = new Date(sprint.endTime);
+      const newSprintStart = new Date(startTime);
+      const newSprintEnd = new Date(endTime);
 
+      // Check if the new sprint overlaps with any existing sprint
+      return (newSprintStart >= sprintStart && newSprintStart <= sprintEnd) ||
+            (newSprintEnd >= sprintStart && newSprintEnd <= sprintEnd) ||
+            (newSprintStart <= sprintStart && newSprintEnd >= sprintEnd);
+    });
+
+    if (hasOverlap){
+      alert("There is already a sprint existing in the selected time period!")
+      return;
+    }
 
     const updateData = {
         sprintId: sprintId,
@@ -181,7 +210,7 @@ const EditSprint = () => {
           <button type="submit" className="update-profile-button">
             Update
           </button>
-          <Link to="/home" className="cancel-button">
+          <Link to={`/projects/listSprints/${projectId}`} className="cancel-button">
             Cancel
           </Link>
         </form>
