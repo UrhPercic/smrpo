@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getDatabase, ref, push } from "firebase/database";
+import { getData, updateData, deleteData } from 'C:/Users/Aki/Files/1MAG/SMRPO/smrpo_2/smrpo/src/db/realtimeDatabase.js';
 // Import Bootstrap CSS in your main file if not already imported
 // import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -63,34 +64,70 @@ const AddProjectForm = () => {
     return isValidPO && isValidKBM && isValidDOM;
   };
 
+  const checkProjectName = async (newName) => {
+    try {
+      // Fetch all projects data
+      const projectsSnapshot = await getData('/projects');
+      const projectsData = Object.values(projectsSnapshot);
+
+      // Check if the new name is already taken
+      const nameExists = projectsData.some(project => project.name === newName);
+
+      console.log(newName)
+      console.log(nameExists)
+      return nameExists
+      
+    } catch (error) {
+      console.error('Error checking or updating project name:', error);
+      // Handle error (e.g., display an error message to the user)
+    }
+  };
+
+
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (!validateRoles()) {
       alert("Please ensure the roles are correctly assigned according to the rules.");
       return;
     }
-  
-    // Prepare projectData with rolesByUser as before
-    const projectData = {
-      name: formData.name,
-      description: formData.description,
-      users: formData.users.reduce((acc, { userId, role }) => {
-        (acc[userId] = acc[userId] || []).push(role);
-        return acc;
-      }, {}),
-    };
-  
-    const db = getDatabase();
-    push(ref(db, 'projects'), projectData)
-      .then(() => alert("Project added successfully"))
-      .catch((error) => {
-        console.error("Failed to add project:", error);
-        alert("Failed to add project: " + error.message);
-      });
-  };
-  
+
+    try {
+      const nameExists = await checkProjectName(formData.name);
+      if (nameExists) {
+        alert("Project name is already taken.");
+        return;
+      }
+
+      // Prepare project data with users formatted correctly
+      const projectData = {
+        name: formData.name,
+        description: formData.description,
+        users: formData.users.reduce((acc, user) => {
+          acc[user.userId] = (acc[user.userId] || []).concat(user.role);
+          return acc;
+        }, {})
+      };
+
+      const db = getDatabase();
+      push(ref(db, 'projects'), projectData)
+        .then(() => {
+          alert("Project added successfully");
+        })
+        .catch((error) => {
+          console.error("Failed to add project:", error);
+          alert("Failed to add project: " + error.message);
+        });
+
+    } catch (error) {
+      console.error("Error while handling project submission:", error);
+      alert("Error while handling project submission. Please try again.");
+    }
+};
+
+
 
 
 

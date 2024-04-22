@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { getData, updateData, deleteData } from 'C:/Users/Aki/Files/1MAG/SMRPO/smrpo_2/smrpo/src/db/realtimeDatabase.js';
 // Ensure Bootstrap CSS is imported in your main file, e.g., index.js or App.js
 
 const ProjectEditForm = () => {
@@ -12,6 +13,8 @@ const ProjectEditForm = () => {
   const [availableUsers, setAvailableUsers] = useState([]);
   const [newUserId, setNewUserId] = useState('');
   const [newUserRole, setNewUserRole] = useState('');
+  const [originalName, setOriginalName] = useState("");
+
 
   useEffect(() => {
     Promise.all([
@@ -20,6 +23,7 @@ const ProjectEditForm = () => {
     ]).then(([projectData, usersData]) => {
       if (projectData && typeof projectData.users === 'object' && !Array.isArray(projectData.users)) {
         // Convert users object into an array
+        setOriginalName(projectData.name);
         const usersArray = Object.entries(projectData.users).map(([userId, roles]) => {
           const foundUser = usersData.find(u => u.id === userId);
           return {
@@ -43,13 +47,8 @@ const ProjectEditForm = () => {
     });
   }, [projectId]);
   
+
   
-  
-  
-
-
-
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProjectData(prev => ({ ...prev, [name]: value }));
@@ -95,11 +94,6 @@ const ProjectEditForm = () => {
   };
   
 
-
-
-
-
-
   const removeUser = (userIdToRemove) => {
     setProjectData(prevData => ({
       ...prevData,
@@ -107,23 +101,70 @@ const ProjectEditForm = () => {
     }));
   };
 
+  const validateRoles = () => {
+    const roleCounts = projectData.users.reduce((acc, user) => {
+      user.roles.forEach(role => {
+        if (!acc[role]) {
+          acc[role] = 0;
+        }
+        acc[role]++;
+      });
+      return acc;
+    }, {});
+  
+    const isValidPO = roleCounts["Project Owner"] === 1; // Exactly one Project Owner
+    const isValidSM = roleCounts["Scrum Master"] <= 1; // At most one Scrum Master
+    const isValidDTM = roleCounts["Development Team Member"] > 0; // At least one Development Team Member
+  
+    return isValidPO && isValidSM && isValidDTM;
+  };
+
+  const checkProjectNameExists = async (newName) => {
+    try {
+      const projectsSnapshot = await getData('/projects');
+      const projectsData = Object.values(projectsSnapshot);
+  
+      // Check for name clash excluding the current project if it is the same as the original
+      const nameExists = projectsData.some(project => project.name === newName && project.name !== originalName);
+  
+      return nameExists;
+    } catch (error) {
+      console.error('Error checking project name:', error);
+      return false;
+    }
+  };
+  
+  
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Validation for exactly one Product Owner without other roles
-    const productOwners = projectData.users.filter(user => user.roles.includes("Project Owner"));
-    if (productOwners.length !== 1 || (productOwners.length === 1 && productOwners[0].roles.length > 1)) {
-      alert("There must be exactly one Product Owner, and they cannot have any other roles.");
+  
+    if (!validateRoles()) {
+      alert("Please ensure the roles are correctly assigned according to the rules.");
       return;
     }
-
+    const nameExists = await checkProjectNameExists(projectData.name);
+    if (nameExists) {
+      alert("The project name is already taken by another project. Please choose a different name.");
+      return;
+    }
+  
     try {
+      const updatedProjectData = {
+        name: projectData.name,
+        description: projectData.description,
+        users: projectData.users.reduce((acc, user) => {
+          acc[user.userId] = user.roles;
+          return acc;
+        }, {})
+      };
+  
       const response = await fetch(`http://localhost:3001/api/projects/update/${projectId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(projectData),
+        body: JSON.stringify(updatedProjectData),
       });
-
+  
       if (response.ok) {
         alert("Project updated successfully");
       } else {
@@ -134,8 +175,11 @@ const ProjectEditForm = () => {
       console.error("Error updating project:", error);
       alert("An error occurred while updating the project.");
     }
-
   };
+  
+  
+
+  
 
   return (
     <div className="container mt-3">
