@@ -74,44 +74,84 @@ const SprintBacklogTab = () => {
   
    
     if (destination.droppableId === "Active") {
-      updatedTask.startTime = new Date().toISOString(); 
+        updatedTask.startTime = new Date().toISOString(); 
     }
   
-   
+    
     if (destination.droppableId === "Assigned" && source.droppableId === "Active") {
-      updatedTask.finishTime = new Date().toISOString(); 
-    }
+        updatedTask.finishTime = new Date().toISOString();
   
-    try {
-      const response = await fetch(
-        `https://smrpo-acd88-default-rtdb.europe-west1.firebasedatabase.app/tasks/${updatedTask.id}.json`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(updatedTask),
+        const startTime = new Date(updatedTask.startTime).getTime();
+        const endTime = new Date(updatedTask.finishTime).getTime();
+        const timeSpentMillis = endTime - startTime;
+  
+        const hours = Math.floor(timeSpentMillis / (1000 * 60 * 60));
+        const minutes = Math.floor((timeSpentMillis % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeSpentMillis % (1000 * 60)) / 1000);
+  
+        const timeSpent = `${hours}:${minutes}:${seconds}`;
+  
+        const newTimeLogEntry = {
+            task_id: updatedTask.id,
+            user_id: updatedTask.responsible_user_id, 
+            start: updatedTask.startTime,
+            end: updatedTask.finishTime,
+            time_spent: timeSpent,
+        };
+  
+        try {
+            const response = await fetch(
+                `https://smrpo-acd88-default-rtdb.europe-west1.firebasedatabase.app/tasks/${updatedTask.id}.json`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(updatedTask),
+                }
+            );
+  
+            if (!response.ok) {
+                throw new Error("Failed to update the task.");
+            }
+  
+            const timeLogResponse = await fetch(
+                `https://smrpo-acd88-default-rtdb.europe-west1.firebasedatabase.app/time_log.json`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(newTimeLogEntry),
+                }
+            );
+  
+            if (!timeLogResponse.ok) {
+                throw new Error("Failed to insert entry into time_log table.");
+            }
+  
+            console.log("New entry in time_log table:", newTimeLogEntry);
+  
+            const newTasks = [...task];
+            newTasks[newTasks.findIndex((t) => t.id === updatedTask.id)] = updatedTask;
+            setTask(newTasks);
+            console.log(
+                `Item ${draggableId} moved from ${source.droppableId} to ${destination.droppableId}`
+            );
+        } catch (error) {
+            console.error("Error:", error);
         }
-      );
-  
-      if (!response.ok) {
-        throw new Error("Failed to update the task.");
-      }
-  
-      console.log("Task updated successfully:", updatedTask);
-  
-      const newTasks = task.filter((s) => s.id !== draggableId);
-      newTasks.splice(destination.index, 0, updatedTask);
-      console.log("Old state:", task);
-      console.log("New state:", newTasks);
-      setTask(newTasks);
-      console.log(
-        `Item ${draggableId} moved from ${source.droppableId} to ${destination.droppableId}`
-      );
-    } catch (error) {
-      console.error("Error updating task:", error);
+    } else {
+        
+        const newTasks = [...task];
+        newTasks[newTasks.findIndex((t) => t.id === updatedTask.id)] = updatedTask;
+        setTask(newTasks);
+        console.log(
+            `Item ${draggableId} moved from ${source.droppableId} to ${destination.droppableId}`
+        );
     }
-  };
+};
+
   
 
   const Column = ({ title, status, tasks, subColumns }) => {

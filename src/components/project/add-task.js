@@ -9,7 +9,7 @@ const AddTask = ({ projectId, story }) => {
     description: "",
     projected_time: 0,
     user_story_id: story ? story.id : "",
-    StartTime: null, // Initialize StartTime and FinishTime
+    StartTime: null, 
     FinishTime: null,
   });
 
@@ -22,7 +22,6 @@ const AddTask = ({ projectId, story }) => {
     event.preventDefault();
 
     try {
-      // If the task is added to the "Assigned" column, record StartTime
       const currentDateTime = new Date().toISOString();
       const updatedTaskData = {
         ...taskData,
@@ -37,7 +36,7 @@ const AddTask = ({ projectId, story }) => {
     }
   };
 
-  // Remaining JSX for the form
+
 };
 
 export default AddTask;
