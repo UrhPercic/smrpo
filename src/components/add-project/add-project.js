@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getDatabase, ref, push } from "firebase/database";
-import { getData, updateData, deleteData } from 'C:/Users/Aki/Files/1MAG/SMRPO/smrpo_2/smrpo/src/db/realtimeDatabase.js';
+import { getData } from "../../db/realtimeDatabase";
 // Import Bootstrap CSS in your main file if not already imported
 // import 'bootstrap/dist/css/bootstrap.min.css';
 

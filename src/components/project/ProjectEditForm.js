@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { getData, updateData, deleteData } from 'C:/Users/Aki/Files/1MAG/SMRPO/smrpo_2/smrpo/src/db/realtimeDatabase.js';
+import { getData } from "../../db/realtimeDatabase";
 // Ensure Bootstrap CSS is imported in your main file, e.g., index.js or App.js
 
 const ProjectEditForm = () => {
