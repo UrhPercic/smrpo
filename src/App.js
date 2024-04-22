@@ -21,6 +21,7 @@ import AddUserStory from "./components/project/userStory/add-userStory";
 import EditUserStory from "./components/project/userStory/edit-userStory";
 import Sprints from "./components/project/userStory/sprintList";
 import DiagramBurnDown from "./components/diagram-burn-down/diagram-burn-down";
+import StoryTasks from "./components/project/StoryTasks"; // Import the StoryTasks component
 import Wall from "./components/wall/wall";
 
 function App() {
@@ -79,6 +80,11 @@ function App() {
                   path="/projects/wall/:projectId"
                   element={<Wall />}
               />
+              <Route
+                path="/projects/:projectId/story-tasks/:storyId"
+                element={<StoryTasks />}
+              />{" "}
+              {/* Add route for StoryTasks */}
             </Route>
           </Routes>
         </div>
