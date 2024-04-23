@@ -116,7 +116,10 @@
   margin: 1px;
   align-items: center;
 }
-
+.story-section div.test p {
+    color: #007bff;
+    font-style: italic;
+}
 .sub-columns-container {
   display: flex;
   width: 100%;
@@ -154,12 +157,9 @@
 }
 
 .story-section p {
-  color: #333;
-  /* Limit text to 2 lines */
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-bottom: 0.25rem;
-  font-size: 0.75rem;
+    color: #333;
+    margin-bottom: 0.25rem;
+    font-size: 0.75rem;
 }
 
 .story-section p:last-child {
@@ -190,10 +190,6 @@
   background-color: #f39c12;
 }
 
-.story-section .test {
-  font-style: italic;
-  color: #007bff;
-}
 
 .edit-story-button {
   display: inline-block;

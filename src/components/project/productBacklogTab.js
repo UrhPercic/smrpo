@@ -115,45 +115,52 @@ const ProductBacklogTab = () => {
     setShowAddTaskForm(!showAddTaskForm);
   };
 
-  const Column = ({ title, status, stories, subColumns }) => {
-    const renderContent = (status, stories) => (
-      <Droppable droppableId={status}>
-        {(provided, snapshot) => (
-          <div
-            ref={provided.innerRef}
-            {...provided.droppableProps}
-            className={`sub-column-content ${
-              snapshot.isDraggingOver ? "droppable-over" : ""
-            }`}
-          >
-            {stories
-              .filter((item) => item.status === status)
-              .map((storyItem, index) => (
-                <Draggable
-                  key={storyItem.id}
-                  draggableId={storyItem.id}
-                  index={index}
-                >
-                  {(provided) => (
+
+    const Column = ({ title, status, stories, subColumns }) => {
+        const renderContent = (status, stories) => (
+            <Droppable droppableId={status}>
+                {(provided, snapshot) => (
                     <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                      className={`story-section ${
-                        snapshot.isDragging ? "dragging-story" : ""
-                      }`}
+                        ref={provided.innerRef}
+                        {...provided.droppableProps}
+                        className={`sub-column-content ${
+                            snapshot.isDraggingOver ? "droppable-over" : ""
+                        }`}
                     >
-                      <h4>{storyItem.userStoryName}</h4>
-                      <p className="description-preview">
-                        {storyItem.description}
-                      </p>
-                      <p className="test">{storyItem.test}</p>
-                      <p>
-                        <span className="priority">{storyItem.priority}</span>
-                        <span className="businessValue">
-                          {storyItem.businessValue}
-                        </span>
-                      </p>
+                        {stories
+                            .filter((item) => item.status === status)
+                            .map((storyItem, index) => (
+                                <Draggable
+                                    key={storyItem.id}
+                                    draggableId={storyItem.id}
+                                    index={index}
+                                >
+                                    {(provided) => (
+                                        <div
+                                            ref={provided.innerRef}
+                                            {...provided.draggableProps}
+                                            {...provided.dragHandleProps}
+                                            className={`story-section ${
+                                                snapshot.isDragging ? "dragging-story" : ""
+                                            }`}
+                                        >
+                                            <h4>{storyItem.userStoryName}</h4>
+                                            <div className="description-preview">
+                                                {storyItem.description.split("\n").map((line, index) => (
+                                                    <p key={index}>{line}</p>
+                                                ))}
+                                            </div>
+
+                                            <div className="test">
+                                                {storyItem.test.split("\n").map((line, index) => (
+                                                    <p key={index}>{line}</p>
+                                                ))}
+                                            </div>
+                                            <p>
+                                                Priority: <span className="priority">{storyItem.priority}</span>
+                                                Business Value: <span className="businessValue">{storyItem.businessValue}
+                            </span>
+                                            </p>
 
                       <button
                         className="add-task-button"
