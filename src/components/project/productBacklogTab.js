@@ -147,14 +147,20 @@ const ProductBacklogTab = () => {
                                             }`}
                                         >
                                             <h4>{storyItem.userStoryName}</h4>
-                                            <p className="description-preview">
-                                                {storyItem.description}
-                                            </p>
-                                            <p className="test">{storyItem.test}</p>
+                                            <div className="description-preview">
+                                                {storyItem.description.split("\n").map((line, index) => (
+                                                    <p key={index}>{line}</p>
+                                                ))}
+                                            </div>
+
+                                            <div className="test">
+                                                {storyItem.test.split("\n").map((line, index) => (
+                                                    <p key={index}>{line}</p>
+                                                ))}
+                                            </div>
                                             <p>
-                                                <span className="priority">{storyItem.priority}</span>
-                                                <span className="businessValue">
-                                {storyItem.businessValue}
+                                                Priority: <span className="priority">{storyItem.priority}</span>
+                                                Business Value: <span className="businessValue">{storyItem.businessValue}
                             </span>
                                             </p>
 
