@@ -8,7 +8,7 @@ const AddUserStory = () => {
     const {projectId} = useParams();
     const [priority] = useState(["Must Have", "Could Have", "Should Have", "Won't have this time"]);
     const [businessValue] = useState(["Low", "Medium", "High"]);
-    const [status] = useState(["Product Backlog1", "Product Backlog2", "Sprint Backlog", "In Progress", "Testing", "Done", "Backlog"]);
+    const [status] = useState(["Unrealised", "Realised_Unassigned", "Realised_Assigned"]);
     const [formData, setFormData] = useState({
         userStoryName: "",
         projectId: projectId,
@@ -16,7 +16,7 @@ const AddUserStory = () => {
         test: "",
         priority: "Must Have",
         businessValue: "Low",
-        status: "Product Backlog1"
+        status: "Unrealised"
     });
 
 
