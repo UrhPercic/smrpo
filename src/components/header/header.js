@@ -21,12 +21,17 @@ const Header = () => {
     if (pathname.startsWith("/projects/planning-poker/")) {
       return "Planning poker";
     }
+    if (pathname.startsWith("/projects/story-tasks/")) {
+      return "User stories tasks";
+    }
 
     switch (pathname) {
       case "/":
         return "Login";
       case "/home":
         return "Home";
+      case "/edit-password":
+        return "Edit password";
       case "/add-project":
         return "Add Project";
       case "/user-profile":
@@ -36,6 +41,8 @@ const Header = () => {
       case "/users":
         return "Users";
       case "/user-profile/edit":
+        return "Edit profile";
+      case "/projects/edit-task":
         return "Edit profile";
       default:
         return "SMRPO";

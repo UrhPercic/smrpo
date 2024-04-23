@@ -67,7 +67,7 @@ const Users = () => {
               }`}
               onClick={() => handleUserClick(user.id)}
             >
-              {user.name}
+              {user.username}
               <i className="fa-solid fa-pen-to-square"></i>
             </div>
           ))}
