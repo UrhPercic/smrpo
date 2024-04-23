@@ -23,6 +23,7 @@ import Sprints from "./components/project/userStory/sprintList";
 import DiagramBurnDown from "./components/diagram-burn-down/diagram-burn-down";
 import StoryTasks from "./components/project/StoryTasks"; // Import the StoryTasks component
 import Wall from "./components/wall/wall";
+import EditPassword from "./components/user-profile/edit-password";
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
               <Route path="add-user" element={<AddUser />} exact />
               <Route path="user-profile" element={<UserProfile />} exact />
               <Route path="/user-profile/edit" element={<EditProfile />} />
+              <Route path="/edit-password" element={<EditPassword />} />
               <Route path="users" element={<Users />} exact />
               <Route path="/project/:projectId" element={<Project />} />
               <Route
@@ -76,10 +78,7 @@ function App() {
                 path="/projects/listSprints/:projectId"
                 element={<Sprints />}
               />
-              <Route
-                  path="/projects/wall/:projectId"
-                  element={<Wall />}
-              />
+              <Route path="/projects/wall/:projectId" element={<Wall />} />
               <Route
                 path="/projects/:projectId/story-tasks/:storyId"
                 element={<StoryTasks />}
