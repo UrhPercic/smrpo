@@ -21,7 +21,6 @@ const DiagramBurnDown = () => {
         getData("/time_log"),
       ]);
 
-      console.log(projectId);
       if (!userStoriesData || !tasksData || !timeLogsData) {
         console.error("Failed to fetch data");
         return;
@@ -64,18 +63,14 @@ const DiagramBurnDown = () => {
         return {
           userStoryId: userStory.id,
           name: userStory.userStoryName,
-          planned: plannedTime / 3600,
+          planned: plannedTime,
           actual: actualTime / 3600,
         };
       });
 
       setChartData({
-        planned: chartData.map((data) =>
-          data.planned >= 1 ? data.planned.toFixed(2) : (data.planned * 60) / 60
-        ),
-        actual: chartData.map((data) =>
-          data.actual >= 1 ? data.actual.toFixed(2) : (data.actual * 60) / 60
-        ),
+        planned: chartData.map((data) => data.planned),
+        actual: chartData.map((data) => Math.round(data.actual * 100) / 100),
         userStories: chartData.map((data) => data.name),
       });
     };
@@ -83,6 +78,7 @@ const DiagramBurnDown = () => {
     fetchData();
   }, [projectId]);
 
+  console.log(chartData);
   const options = {
     title: { text: "User Story Task Burn-Down Chart" },
     xAxis: { categories: chartData.userStories },
