@@ -89,19 +89,24 @@ const EditUserStory = () => {
                 <div className="form-group">
                     <label>Business Value:</label>
                     <select className="form-control" name="businessValue" value={formData.businessValue} onChange={handleChange} required>
-                        <option>Low</option>
-                        <option>Medium</option>
-                        <option>High</option>
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                        <option>6</option>
+                        <option>7</option>
+                        <option>8</option>
+                        <option>9</option>
+                        <option>10</option>
                     </select>
                 </div>
                 <div className="form-group">
                     <label>Status:</label>
                     <select className="form-control" name="status" value={formData.status} onChange={handleChange} required>
-                        <option>Product Backlog</option>
-                        <option>Sprint Backlog</option>
-                        <option>In Progress</option>
-                        <option>Testing</option>
-                        <option>Done</option>
+                        <option>Unrealised</option>
+                        <option>Realised_Unassigned</option>
+                        <option>Realised_Assigned</option>
                     </select>
                 </div>
                 <button type="submit" className="btn btn-primary" onClick={handleSubmit}>Update Story</button>

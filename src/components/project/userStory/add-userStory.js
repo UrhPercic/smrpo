@@ -2,12 +2,13 @@ import React, {useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import {addData, getData} from "../../../db/realtimeDatabase";
 import "./add-userStory.css";
+import ReactMarkdown from "react-markdown";
 
 const AddUserStory = () => {
     const navigate = useNavigate();
     const {projectId} = useParams();
     const [priority] = useState(["Must Have", "Could Have", "Should Have", "Won't have this time"]);
-    const [businessValue] = useState(["Low", "Medium", "High"]);
+    const [businessValue] = useState(["1", "2", "3","4", "5", "6","7", "8", "9","10"]);
     const [status] = useState(["Unrealised", "Realised_Unassigned", "Realised_Assigned"]);
     const [formData, setFormData] = useState({
         userStoryName: "",
@@ -100,17 +101,15 @@ const AddUserStory = () => {
 
                     <div className="form-group1">
                         <label htmlFor="test">Test:</label>
-                        <input
-                            type="text"
+                        <textarea
                             className="form-control"
                             name="test"
                             id="test"
                             value={formData.test}
                             onChange={handleChange}
                             required
-                        />
+                        ></textarea>
                     </div>
-
                     <div className="child">
                         <label htmlFor="priority">Priority:</label>
                         <select

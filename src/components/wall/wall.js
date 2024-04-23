@@ -49,6 +49,7 @@ const DailyScrum = ({addPost, posts}) => {
     const [currentUser, setCurrentUser] = useState({});
     const [commentTexts, setCommentTexts] = useState({});
     const {projectId} = useParams();
+    const [currentUserRole, setCurrentUserRole] = useState('');
 
     const handleChange = (e) => {
         setMessage(e.target.value);
@@ -59,12 +60,23 @@ const DailyScrum = ({addPost, posts}) => {
             const fetchUserDetails = async () => {
                 try {
                     const user = await getData(`/users/${loggedInUserId}`);
-                    setCurrentUser({username: user.username});
+                    setCurrentUser({username: user.username, userId: user.id});
+
+                    const project = await getData(`/projects/${projectId}`);
+                    if (project && project.users) {
+                        const userRoles = project.users[loggedInUserId];
+                        if (userRoles && userRoles.includes("Scrum Master")) {
+                            // User has "Scrum Master" role
+                            setCurrentUserRole("Scrum Master");
+                        }
+                    }
                 } catch (error) {
-                    console.error("Error fetching user details:", error);
+                    console.error("Error fetching user details or project details:", error);
                 }
             };
-            fetchUserDetails();
+            if (loggedInUserId) {
+                fetchUserDetails();
+            }
         }
         const fetchMessages = async () => {
             try {
@@ -97,6 +109,46 @@ const DailyScrum = ({addPost, posts}) => {
 
         await addCommentToPost(postId, commentText);
         handleCommentChange(postId, '');
+    };
+    const deletePostAndComments = async (postId) => {
+        try {
+            const url = `https://smrpo-acd88-default-rtdb.europe-west1.firebasedatabase.app/dailyScrumMessages/${postId}.json`;
+            const response = await fetch(url, { method: 'DELETE' });
+
+            if (!response.ok) {
+                throw new Error(`Error deleting post: ${response.statusText}`);
+            }
+
+            setMessages(messages.filter(message => message.id !== postId));
+
+            console.log(`Post ${postId} and its comments have been deleted.`);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+    const deleteComment = async (postId, commentId) => {
+        try {
+            const url = `https://smrpo-acd88-default-rtdb.europe-west1.firebasedatabase.app/dailyScrumMessages/${postId}/comments/${commentId}.json`;
+            const response = await fetch(url, { method: 'DELETE' });
+
+            if (!response.ok) {
+                throw new Error(`Error deleting comment: ${response.statusText}`);
+            }
+
+            setMessages(messages.map(message => {
+                if (message.id === postId) {
+                    const updatedComments = {...message.comments};
+                    delete updatedComments[commentId];
+                    return {...message, comments: updatedComments};
+                }
+                return message;
+            }));
+
+            console.log(`Comment ${commentId} from post ${postId} has been deleted.`);
+        } catch (error) {
+            console.error('Error:', error);
+        }
     };
 
 
@@ -191,10 +243,18 @@ const DailyScrum = ({addPost, posts}) => {
                                     {post.comments && Object.entries(post.comments).map(([commentId, comment]) => (
                                         <div key={commentId} className="comment">
                                             <strong>{comment.username}</strong>: {comment.text}
+                                            {currentUserRole === 'Scrum Master' && (
+                                                <button onClick={() => deleteComment(post.id, commentId)}>Delete Comment</button>
+                                            )}
                                         </div>
-                                    ))}
 
+                                    ))}
                                 </div>
+                            </div>
+                            <div>
+                                {currentUserRole === 'Scrum Master' && (
+                                    <button onClick={() => deletePostAndComments(post.id)}>Delete Post</button>
+                                )}
                             </div>
                         </div>
 

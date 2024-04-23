@@ -10,8 +10,9 @@ const EditProfile = () => {
     surname: "",
     username: "",
     email: "",
+    privilege: "Normal",
   });
-  const [users, setUsers] = useState([]); // State to hold all users
+  const [users, setUsers] = useState([]);
   const [isDisabled, setIsDisabled] = useState(false);
   const navigate = useNavigate();
   const { userId: paramUserId } = useParams();
@@ -28,18 +29,16 @@ const EditProfile = () => {
     async function fetchData() {
       try {
         const userData = await getData(`/users/${userId}`);
-        const allUsers = await getData("/users"); // Fetch all users
+        const allUsers = await getData("/users");
         const usersArray = Object.values(allUsers || {}).map((user, index) => ({
           id: Object.keys(allUsers)[index],
           ...user,
         }));
 
         setUsers(usersArray);
-        if (userData.privilege === "Disabled") {
-          setIsDisabled(true);
-        } else {
-          setIsDisabled(false);
-        }
+
+        setIsDisabled(userData.privilege === "Disabled");
+
         setUserDetails({ ...userData, id: userId });
         setFormData(userData);
       } catch (error) {
@@ -82,7 +81,7 @@ const EditProfile = () => {
 
     const updatedData = {
       ...formData,
-      privilege: isDisabled ? "Disabled" : "Normal",
+      privilege: formData.privilege,
     };
 
     try {
@@ -93,6 +92,12 @@ const EditProfile = () => {
       console.error("Failed to update user information:", error);
       alert("An error occurred. Please try again.");
     }
+  };
+
+  const handleEditPassword = () => {
+    navigate(`/edit-password`, {
+      state: { userId: userDetails.id },
+    });
   };
 
   return (
@@ -136,6 +141,18 @@ const EditProfile = () => {
               onChange={handleChange}
             />
           </div>
+          <div className="form-group">
+            <label>Privilege:</label>
+            <select
+              name="privilege"
+              value={formData.privilege}
+              onChange={handleChange}
+              disabled={isDisabled}
+            >
+              <option value="Normal">Normal</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
           {location.state?.userId && (
             <button
               type="button"
@@ -147,12 +164,18 @@ const EditProfile = () => {
               {isDisabled ? "Enable User" : "Disable User"}
             </button>
           )}
-          <button type="submit" className="update-profile-button">
-            Update
-          </button>
-          <Link to="/user-profile" className="cancel-button">
-            Cancel
-          </Link>
+          <div className="buttons">
+            <button type="submit" className="default-button">
+              Update
+            </button>
+            <button
+              type="button"
+              onClick={handleEditPassword}
+              className="default-button"
+            >
+              Edit Password
+            </button>
+          </div>
         </form>
       )}
     </div>

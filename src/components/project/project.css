@@ -1,249 +1,248 @@
-
 .add-task-button {
-    background-color: var(--primary-color);
-    color: #fff;
-    border: none;
-    border-radius: var(--border-radius);
-    padding: 0.5rem 1rem;
-    margin-top: 0.5rem;
-    cursor: pointer;
+  background-color: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 0.5rem 1rem;
+  margin-top: 0.5rem;
+  cursor: pointer;
+}
+
+.tasks-button {
+  background-color: #38d318;
+  color: #fff;
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 0.5rem 1rem;
+  margin: 0.5rem;
+  cursor: pointer;
 }
 
 .add-task-form-container {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: rgba(255, 255, 255, 0.9);
-    border-radius: var(--border-radius);
-    padding: var(--padding);
-    box-shadow: var(--box-shadow);
-    z-index: 999;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: var(--border-radius);
+  padding: var(--padding);
+  box-shadow: var(--box-shadow);
+  z-index: 999;
 }
 
 .add-task-form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .add-task-form h2 {
-    margin-bottom: 1rem;
+  margin-bottom: 1rem;
 }
 
 .add-task-form button {
-    margin-top: 1rem;
+  margin-top: 1rem;
 }
 
 /* Retain existing styles */
 :root {
-    --bg-color: #f4f4f4;
-    --primary-color: #2878a9;
-    --delete-color: #D11A2A;
-    --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    --border-radius: 8px;
-    --padding: 1rem;
-    --margin: 1rem;
-
+  --bg-color: #f4f4f4;
+  --primary-color: #2878a9;
+  --delete-color: #d11a2a;
+  --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  --border-radius: 8px;
+  --padding: 1rem;
+  --margin: 1rem;
 }
 
 .scrum-board-container {
-    display: flex;
-    flex-direction: row;
-    overflow-x: auto;
-    overflow-y: auto;
-    white-space: nowrap;
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+  overflow-y: auto;
+  white-space: nowrap;
 }
 
 .cont {
-    overflow: auto;
-    white-space: nowrap;
+  overflow: auto;
+  white-space: nowrap;
 }
 
 .column {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: var(--padding);
-    box-shadow: var(--box-shadow);
-
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: var(--padding);
+  box-shadow: var(--box-shadow);
 }
 
 .column h3 {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
 .column h4 {
-    white-space: normal;
-    overflow-wrap: break-word;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
+  white-space: normal;
+  overflow-wrap: break-word;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
 .add-task {
-    background-color: #e9ecef;
-    border-radius: 10px;
-    padding: 20px 15px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
+  background-color: #e9ecef;
+  border-radius: 10px;
+  padding: 20px 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
 }
 
 .project-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
 .preserve-whitespace {
-    white-space: pre-wrap;
+  white-space: pre-wrap;
 }
 
-.column, .sub-column-content {
-
-    margin: 1px;
-    align-items: center;
+.column,
+.sub-column-content {
+  margin: 1px;
+  align-items: center;
 }
-
+.story-section div.test p {
+    color: #007bff;
+    font-style: italic;
+}
 .sub-columns-container {
-    display: flex;
-    width: 100%;
+  display: flex;
+  width: 100%;
 }
 
 .sub-column {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: var(--padding);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: var(--padding);
 }
 
 .story-section {
-    background-color: var(--bg-color);
-    border-radius: var(--border-radius);
-    padding: 10px;
-    margin-bottom: 15px;
-    box-shadow: var(--box-shadow);
-    transition: box-shadow 0.2s ease;
-    height: 230px;
-    width: 400px;
-    max-width: 400px;
-    overflow: hidden;
+  background-color: var(--bg-color);
+  border-radius: var(--border-radius);
+  padding: 10px;
+  margin-bottom: 15px;
+  box-shadow: var(--box-shadow);
+  transition: box-shadow 0.2s ease;
+  height: 230px;
+  width: 400px;
+  max-width: 400px;
+  overflow: hidden;
 }
 
 .story-section:hover {
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
 .story-section h4 {
-    color: #2878a9;
-    margin-top:  0.5rem;;
-    margin-bottom: 0.5rem;
-    font-size: 1rem;
+  color: #2878a9;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
 }
 
 .story-section p {
     color: #333;
-    /* Limit text to 2 lines */
-    overflow: hidden;
-    text-overflow: ellipsis;
     margin-bottom: 0.25rem;
     font-size: 0.75rem;
 }
 
 .story-section p:last-child {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 .story-section .businessValue {
-    color: #fff;
-    background-color: #27ae60;
-    display: inline-block;
-    padding: 0.5rem 0.5rem;
-    margin-right: 0.5rem;
-    border-radius: 5px;
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+  color: #fff;
+  background-color: #27ae60;
+  display: inline-block;
+  padding: 0.5rem 0.5rem;
+  margin-right: 0.5rem;
+  border-radius: 5px;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
 }
 
 .story-section .priority {
-    display: inline-block;
-    padding: 0.5rem 0.5rem;
-    margin-right: 0.5rem;
-    border-radius: 5px;
-    background-color: #f4f4f4;
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+  display: inline-block;
+  padding: 0.5rem 0.5rem;
+  margin-right: 0.5rem;
+  border-radius: 5px;
+  background-color: #f4f4f4;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
 }
 
 .story-section .priority {
-    color: #fff;
-    background-color: #f39c12;
+  color: #fff;
+  background-color: #f39c12;
 }
 
-
-
-.story-section .test {
-    font-style: italic;
-    color: #007bff;
-}
 
 .edit-story-button {
-    display: inline-block;
-    padding: 0.5rem 0.5rem;
-    margin-right: 0.5rem;
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
-    font-style: italic;
-    color: #fff;
-    background-color: #12c6f3;
-    border: none;
+  display: inline-block;
+  padding: 0.5rem 0.5rem;
+  margin-right: 0.5rem;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+  font-style: italic;
+  color: #fff;
+  background-color: #12c6f3;
+  border: none;
 }
 
 .tabs {
-    display: flex;
-    justify-content: left;
-    margin-bottom: 0px;
+  display: flex;
+  justify-content: left;
+  margin-bottom: 0px;
 }
 
 .tabs button {
-    color: #2c3e50;
-    padding: 10px 25px;
-    background-color: #ffffff;
-    font-size: 16px;
-    border: 2px #2c3e50;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
+  color: #2c3e50;
+  padding: 10px 25px;
+  background-color: #ffffff;
+  font-size: 16px;
+  border: 2px #2c3e50;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
 
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-
-
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .tabs button.active {
-    background-color: rgba(52, 152, 219, 0.1);
-    color: #000000;
+  background-color: rgba(52, 152, 219, 0.1);
+  color: #000000;
 }
 
 .tab-content {
-    padding: 0px;
+  padding: 0px;
 }
 
 .scrum-board-container {
-    background-image: linear-gradient(to bottom,rgba(52, 152, 219, 0.1), #ffffff 30%);
+  background-image: linear-gradient(
+    to bottom,
+    rgba(52, 152, 219, 0.1),
+    #ffffff 30%
+  );
 }
 
-
-.current-sprint{
-    background-color: #f4f4f4;
-    padding: 10px;
-    margin-bottom: 20px;
-    color: #000000;
-    font-size: 16px;
+.current-sprint {
+  background-color: #f4f4f4;
+  padding: 10px;
+  margin-bottom: 20px;
+  color: #000000;
+  font-size: 16px;
 }
-
-
-

@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import { addData } from "../../db/realtimeDatabase";
 import { useNavigate, useParams } from "react-router-dom";
 import "./project.css";
-import StoryTasks from "./StoryTasks";
-
+import StoryTasks from "./userStory-tasks/StoryTasks";
 
 const AddTask = ({ projectId, story }) => {
   const navigate = useNavigate();
