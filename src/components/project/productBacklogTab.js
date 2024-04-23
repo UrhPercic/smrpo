@@ -5,117 +5,115 @@ import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import "./sprintBacklogTab.css";
 import AddTask from "./add-task";
 
-
 const ProductBacklogTab = () => {
-    const { projectId } = useParams();
-    const navigate = useNavigate();
-    const [project, setProject] = useState({ users: [] })
-    const [story, setStory] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [showAddTaskForm, setShowAddTaskForm] = useState(false);
-    const [selectedStory, setSelectedStory] = useState(null);
+  const { projectId } = useParams();
+  const navigate = useNavigate();
+  const [project, setProject] = useState({ users: [] });
+  const [story, setStory] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showAddTaskForm, setShowAddTaskForm] = useState(false);
+  const [selectedStory, setSelectedStory] = useState(null);
 
-    useEffect(() => {
-        const fetchProject = async () => {
-            const fetchedProject = await getData(`/projects/${projectId}`);
-            if (fetchedProject) {
-                console.log("Fetched project:", fetchedProject); // Log the fetched project
-                setProject(fetchedProject);
-            }
-        };
-
-        const fetchStories = async () => {
-            setIsLoading(true); // Start loading
-            fetch(
-                `https://smrpo-acd88-default-rtdb.europe-west1.firebasedatabase.app/userStory.json`
-            )
-                .then((response) => response.json())
-                .then((data) => {
-                    const storiesArray = Object.keys(data || {})
-                        .map((key) => ({
-                            ...data[key],
-                            id: key,
-                        }))
-                        .filter((story) => story.projectId === projectId);
-                    setStory(storiesArray);
-                    setIsLoading(false); // Data loaded
-                })
-                .catch((error) => {
-                    console.error("Failed to fetch stories:", error);
-                    setStory([]); // Fallback in case of error
-                    setIsLoading(false); // Data loading failed
-                });
-        };
-
-        fetchStories();
-        fetchProject();
-    }, [projectId]);
-    if (isLoading) {
-        return <div>Loading stories...</div>;
-    }
-
-    const handleEditStory = (storyId) => {
-        navigate(`/projects/edit-userStory/${storyId}`);
-
+  useEffect(() => {
+    const fetchProject = async () => {
+      const fetchedProject = await getData(`/projects/${projectId}`);
+      if (fetchedProject) {
+        console.log("Fetched project:", fetchedProject); // Log the fetched project
+        setProject(fetchedProject);
+      }
     };
 
-    const onDragEnd = async (result) => {
-        const { source, destination, draggableId } = result;
-
-        if (!destination) return; // dropped outside a droppable area
-
-        const storyDragged = story.find((s) => s.id === draggableId);
-        if (!storyDragged) return;
-
-        const updatedStory = { ...storyDragged, status: destination.droppableId };
-
-        await updateStoryInBackend(updatedStory);
-
-        const newStories = story.filter((s) => s.id !== draggableId);
-        newStories.splice(destination.index, 0, updatedStory);
-        console.log("Old state:", story);
-        console.log("New state:", newStories);
-        setStory(newStories);
-        console.log(
-            `Item ${draggableId} moved from ${source.droppableId} to ${destination.droppableId}`
-        );
+    const fetchStories = async () => {
+      setIsLoading(true); // Start loading
+      fetch(
+        `https://smrpo-acd88-default-rtdb.europe-west1.firebasedatabase.app/userStory.json`
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          const storiesArray = Object.keys(data || {})
+            .map((key) => ({
+              ...data[key],
+              id: key,
+            }))
+            .filter((story) => story.projectId === projectId);
+          setStory(storiesArray);
+          setIsLoading(false); // Data loaded
+        })
+        .catch((error) => {
+          console.error("Failed to fetch stories:", error);
+          setStory([]); // Fallback in case of error
+          setIsLoading(false); // Data loading failed
+        });
     };
 
-    const updateStoryInBackend = async (storyToUpdate) => {
-        try {
-            const response = await fetch(
-                `https://smrpo-acd88-default-rtdb.europe-west1.firebasedatabase.app/userStory/${storyToUpdate.id}.json`,
-                {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(storyToUpdate),
-                }
-            );
+    fetchStories();
+    fetchProject();
+  }, [projectId]);
+  if (isLoading) {
+    return <div>Loading stories...</div>;
+  }
 
-            if (!response.ok) {
-                throw new Error("Failed to update the story.");
-            }
-            console.log("Story updated successfully:", storyToUpdate);
-        } catch (error) {
-            console.error("Error updating story:", error);
+  const handleEditStory = (storyId) => {
+    navigate(`/projects/edit-userStory/${storyId}`);
+  };
+
+  const onDragEnd = async (result) => {
+    const { source, destination, draggableId } = result;
+
+    if (!destination) return; // dropped outside a droppable area
+
+    const storyDragged = story.find((s) => s.id === draggableId);
+    if (!storyDragged) return;
+
+    const updatedStory = { ...storyDragged, status: destination.droppableId };
+
+    await updateStoryInBackend(updatedStory);
+
+    const newStories = story.filter((s) => s.id !== draggableId);
+    newStories.splice(destination.index, 0, updatedStory);
+    console.log("Old state:", story);
+    console.log("New state:", newStories);
+    setStory(newStories);
+    console.log(
+      `Item ${draggableId} moved from ${source.droppableId} to ${destination.droppableId}`
+    );
+  };
+
+  const updateStoryInBackend = async (storyToUpdate) => {
+    try {
+      const response = await fetch(
+        `https://smrpo-acd88-default-rtdb.europe-west1.firebasedatabase.app/userStory/${storyToUpdate.id}.json`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(storyToUpdate),
         }
-    };
-    const handleAddTask = (selectedStory) => {
-        setSelectedStory(selectedStory);
-        setShowAddTaskForm(true);
-    };
-    const handleCardClick = (storyItem) => {
-        console.log("Card clicked:", storyItem);
-    };
-    const handleViewStory = (storyItem) => {
-        navigate(`/projects/${projectId}/story-tasks/${storyItem.id}`);
-    };
+      );
 
-    const toggleAddTaskForm = () => {
-        setShowAddTaskForm(!showAddTaskForm);
-    };
+      if (!response.ok) {
+        throw new Error("Failed to update the story.");
+      }
+      console.log("Story updated successfully:", storyToUpdate);
+    } catch (error) {
+      console.error("Error updating story:", error);
+    }
+  };
+  const handleAddTask = (selectedStory) => {
+    setSelectedStory(selectedStory);
+    setShowAddTaskForm(true);
+  };
+  const handleCardClick = (storyItem) => {
+    console.log("Card clicked:", storyItem);
+  };
+  const handleViewStory = (storyItem) => {
+    navigate(`/projects/story-tasks/${storyItem.id}`);
+  };
+
+  const toggleAddTaskForm = () => {
+    setShowAddTaskForm(!showAddTaskForm);
+  };
 
 
     const Column = ({ title, status, stories, subColumns }) => {
@@ -164,84 +162,88 @@ const ProductBacklogTab = () => {
                             </span>
                                             </p>
 
-                                            <button
-                                                className="add-task-button"
-                                                onClick={() => handleAddTask(storyItem)}
-                                            >
-                                                Add Task
-                                            </button>
-                                            <button
-                                                className="view-button"
-                                                onClick={() => handleViewStory(storyItem)}
-                                            >
-                                                View
-                                            </button>
-                                            <button onClick={() => handleEditStory(storyItem.id)} className="edit-story-button">Edit Story</button>
-
-                                        </div>
-                                    )}
-                                </Draggable>
-                            ))}
-                        {provided.placeholder}
+                      <button
+                        className="add-task-button"
+                        onClick={() => handleAddTask(storyItem)}
+                      >
+                        Add Task
+                      </button>
+                      <button
+                        className="tasks-button"
+                        onClick={() => handleViewStory(storyItem)}
+                      >
+                        Tasks
+                      </button>
+                      <button
+                        onClick={() => handleEditStory(storyItem.id)}
+                        className="edit-story-button"
+                      >
+                        Edit Story
+                      </button>
                     </div>
-
-                )}
-            </Droppable>
-        );
-        return (
-            <div className="column">
-                <h3>{title}</h3>
-                {subColumns ? (
-                    <div className="sub-columns-container">
-                        {subColumns.map((subColumn) => (
-                            <div key={subColumn.status} className="sub-column">
-                                <h4>{subColumn.title}</h4>
-                                {renderContent(subColumn.status, stories)}
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    renderContent(status, stories)
-                )}
-            </div>
-        );
-    };
-    return(
-        <div className="stories-list">
-            <DragDropContext onDragEnd={onDragEnd}>
-                <div className="scrum-board-container">
-
-                    <Column
-                        title="Unrealised stories"
-                        status="Unrealised"
-                        stories={story}
-                        style={{ flex: '1', marginRight: '50px' }} // Adjust width here
-                    />
-                    <Column
-                        title="Realised stories"
-                        stories={story}
-                        subColumns={[
-                            { title: "Unassigned", status: "Realised_Unassigned" },
-                            { title: "Assigned to current sprint", status: "Realised_Assigned" },
-                        ]}
-                        style={{ flex: '1', marginRight: '50px' }} // Adjust width here
-                    />
-
-                </div>
-            </DragDropContext>
-            {/* Conditionally render the AddTask component within a popup */}
-            {showAddTaskForm && (
-                <div className="popup-container">
-                    <div className="popup">
-                        <span className="close" onClick={toggleAddTaskForm}>
-                            &times;
-                        </span>
-                        <AddTask projectId={projectId} story={selectedStory} />
-                    </div>
-                </div>
-            )}
+                  )}
+                </Draggable>
+              ))}
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
+    );
+    return (
+      <div className="column">
+        <h3>{title}</h3>
+        {subColumns ? (
+          <div className="sub-columns-container">
+            {subColumns.map((subColumn) => (
+              <div key={subColumn.status} className="sub-column">
+                <h4>{subColumn.title}</h4>
+                {renderContent(subColumn.status, stories)}
+              </div>
+            ))}
+          </div>
+        ) : (
+          renderContent(status, stories)
+        )}
+      </div>
+    );
+  };
+  return (
+    <div className="stories-list">
+      <DragDropContext onDragEnd={onDragEnd}>
+        <div className="scrum-board-container">
+          <Column
+            title="Unrealised stories"
+            status="Unrealised"
+            stories={story}
+            style={{ flex: "1", marginRight: "50px" }} // Adjust width here
+          />
+          <Column
+            title="Realised stories"
+            stories={story}
+            subColumns={[
+              { title: "Unassigned", status: "Realised_Unassigned" },
+              {
+                title: "Assigned to current sprint",
+                status: "Realised_Assigned",
+              },
+            ]}
+            style={{ flex: "1", marginRight: "50px" }} // Adjust width here
+          />
         </div>
-    )
+      </DragDropContext>
+      {/* Conditionally render the AddTask component within a popup */}
+      {showAddTaskForm && (
+        <div className="popup-container">
+          <div className="popup">
+            <span className="close" onClick={toggleAddTaskForm}>
+              &times;
+            </span>
+            <AddTask projectId={projectId} story={selectedStory} />
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default ProductBacklogTab;
