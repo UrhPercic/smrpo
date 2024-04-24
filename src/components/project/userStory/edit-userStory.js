@@ -5,6 +5,7 @@ import { getData, updateData, deleteData } from '../../../db/realtimeDatabase';
 const EditUserStory = () => {
     const { projectId, storyId } = useParams();
     const navigate = useNavigate();
+    const [project, setProject] = useState({ users: [] });
     const [formData, setFormData] = useState({
         userStoryName: '',
         description: '',
@@ -38,7 +39,6 @@ const EditUserStory = () => {
         await updateData(`/userStory/${storyId}`, formData)
             .then(() => {
                 alert('Story updated successfully');
-                navigate(`/project/${projectId}`);
             })
             .catch(error => {
                 console.error('Failed to update story:', error);
@@ -51,7 +51,6 @@ const EditUserStory = () => {
             await deleteData(`/userStory/${storyId}`)
                 .then(() => {
                     alert('Story deleted successfully');
-                    navigate(`/project/${projectId}`);
                 })
                 .catch(error => {
                     console.error('Failed to delete story:', error);
