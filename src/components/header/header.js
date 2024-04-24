@@ -24,6 +24,9 @@ const Header = () => {
     if (pathname.startsWith("/projects/story-tasks/")) {
       return "User stories tasks";
     }
+    if (pathname.startsWith("/projects/edit-task/")) {
+      return "Edit task";
+    }
 
     switch (pathname) {
       case "/":
@@ -41,8 +44,6 @@ const Header = () => {
       case "/users":
         return "Users";
       case "/user-profile/edit":
-        return "Edit profile";
-      case "/projects/edit-task":
         return "Edit profile";
       default:
         return "SMRPO";
