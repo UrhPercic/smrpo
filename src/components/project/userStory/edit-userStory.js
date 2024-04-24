@@ -74,7 +74,14 @@ const EditUserStory = () => {
                 </div>
                 <div className="form-group">
                     <label>Test:</label>
-                    <input type="text" className="form-control" name="test" value={formData.test} onChange={handleChange} required />
+                    <textarea
+                            className="form-control"
+                            name="test"
+                            id="test"
+                            value={formData.test}
+                            onChange={handleChange}
+                            required
+                        ></textarea>
                 </div>
                 <div className="form-group">
                     <label>Priority:</label>
