@@ -190,9 +190,7 @@ const ProductBacklogTab = () => {
                                         >
                                             <h4>{storyItem.userStoryName}</h4>
                                             <div className="description-preview">
-                                                {storyItem.description.split("\n").map((line, index) => (
-                                                    <p key={index}>{line}</p>
-                                                ))}
+                                                <p>{storyItem.description}</p>
                                             </div>
 
                                             <div className="test">

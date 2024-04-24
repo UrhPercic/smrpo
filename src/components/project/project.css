@@ -120,6 +120,17 @@
     color: #007bff;
     font-style: italic;
 }
+.description-preview p {
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  text-overflow: clip;
+  overflow: visible;
+  margin-bottom: 0.25rem;
+}
+.story-section div.description-preview p {
+  max-height: none;
+  overflow: auto;
+}
 .sub-columns-container {
   display: flex;
   width: 100%;
