@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { getData, updateData } from "../../../db/realtimeDatabase";
+import { updateData } from "../../../db/realtimeDatabase";
 import "./edit-sprint.css";
 
 const EditSprint = () => {
@@ -20,29 +20,60 @@ const EditSprint = () => {
   var isActive = false;
 
   useEffect(() => {
+
+
+    fetch(
+      `https://smrpo-acd88-default-rtdb.europe-west1.firebasedatabase.app/sprints.json`
+  )
+      .then((response) => response.json())
+      .then((data) => {
+          const sprintsArray = Object.keys(data || {})
+              .map((key) => ({
+                  ...data[key],
+                  id: key,
+              }))
+              .filter((sprint) => sprint.projectId === projectId);
+          setProjectSprints(sprintsArray);
+          //setIsLoading(false); // Data loaded
+      })
+      .catch((error) => {
+          console.error("Failed to fetch sprints:", error);
+          setProjectSprints([]); // Fallback in case of error
+          //setIsLoading(false); // Data loading failed
+      });
+
     
     const fetchSprints = async () => {
         try {
-        fetch(`http://localhost:3001/api/sprints`)
+          fetch(
+            `https://smrpo-acd88-default-rtdb.europe-west1.firebasedatabase.app/sprints.json`
+          )
             .then((response) => response.json())
             .then((data) => {
-            setSprints(data); // Update state with fetched sprints
-            
-            // Find the object with the specific ID
-            const foundObject = data.find(obj => obj.id === sprintId);
-            const currentDateTime = new Date();
-            const startDateTime = new Date(foundObject.startTime);
-            const endDateTime = new Date(foundObject.endTime);
-            
-            isActive = currentDateTime >= startDateTime && currentDateTime <= endDateTime;
-            foundObject.isActive = isActive;
+              const sprintsArray = Object.keys(data || {})
+                  .map((key) => ({
+                      ...data[key],
+                      id: key,
+                  }))
+                  .filter((sprint) => sprint.projectId === projectId);
+              
+              setSprints(sprintsArray);
 
-            setFormData(foundObject);
-            console.log(foundObject); // Log the found object
+              // Find the object with the specific ID
+              const foundObject = sprintsArray.find(obj => obj.id === sprintId);
+              const currentDateTime = new Date();
+              const startDateTime = new Date(foundObject.startTime);
+              const endDateTime = new Date(foundObject.endTime);
 
-            
-            console.log(isActive);
+              isActive = currentDateTime >= startDateTime && currentDateTime <= endDateTime;
+              foundObject.isActive = isActive;
 
+              setFormData(foundObject);
+              console.log(foundObject); // Log the found object
+
+              console.log(isActive);
+
+              //setIsLoading(false); // Data loaded
             })
             .catch((error) => console.error('Error fetching sprints:', error));
         } catch (error) {
@@ -61,8 +92,29 @@ const EditSprint = () => {
           })
     };
 
+    const fetchAllSprints2 = async () => {
+      await fetch(
+        `https://smrpo-acd88-default-rtdb.europe-west1.firebasedatabase.app/sprints.json`
+      )
+        .then((response) => response.json())
+        .then((data) => {
+            const filteredSprints = Object.keys(data || {})
+                .map((key) => ({
+                    ...data[key],
+                    id: key,
+                }))
+                .filter((sprint) => sprint.projectId === projectId)
+                .filter((sprint) => sprint.id !== sprintId);
+            // Filter out the sprint with the excluded sprintId
+            // Set the filtered sprints to state
+            setProjectSprints(filteredSprints);
+        })
+    };
+
+
+
     fetchSprints();
-    fetchAllSprints();
+    fetchAllSprints2();
     console.log(projectSprints);
     // Find the object with the specific ID
     
@@ -71,7 +123,7 @@ const EditSprint = () => {
     console.log(sprintId);
     //console.log(foundObject);
     
-  }, [formData.startTime]);
+  }, []);
 
   const handleChange = (e) => {
     setFormData({
@@ -127,7 +179,7 @@ const EditSprint = () => {
       return;
     }
 
-    const updateData = {
+    const updateDataSet = {
         sprintId: sprintId,
         sprintName: formData.sprintName,
         startTime: formData.startTime,
@@ -138,7 +190,11 @@ const EditSprint = () => {
 
     // Send the project data to the server1
     try {
-        const response = await fetch("http://localhost:3001/api/sprints/updateData", {
+
+        await updateData(`/sprints/${sprintId}`, updateDataSet);
+        alert("Sprint updated successfully");
+        navigate(`/projects/listSprints/${projectId}`)
+        /*const response = await fetch("http://localhost:3001/api/sprints/updateData", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -154,7 +210,7 @@ const EditSprint = () => {
         } else {
         const errorData = await response.json();
         alert("Failed to update sprint: " + errorData.error);
-        }
+        }*/
     } catch (error) {
         console.error("Error submitting update to sprint:", error);
         alert("An error occurred. Please try again.");

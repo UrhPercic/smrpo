@@ -11,8 +11,26 @@ const Project = () => {
   const navigate = useNavigate();
   const [project, setProject] = useState({ users: [] }); // Initialize users as an empty array
   const [activeTab, setActiveTab] = useState('product_backlog');
-  const [projectSprints, setProjectSprints] = useState([]);
+  const [activeProjectSprints, setActiveProjectSprints] = useState([]);
+  const [handlingSprints, setHandlingSprints] = useState([]);
+  const [userRole, setUserRole] = useState("Unknown");
 
+
+
+  const getCurrentUserRole = (users) => {
+    const userId = localStorage.getItem("userId");
+    const userRolesMap = users.reduce((acc, user) => {
+        const roleName = user[0];
+        const userId = user.id;
+        acc[userId] = roleName;
+        return acc;
+    }, {});
+    if (userRolesMap[userId]) {
+        console.log("User role found:", userRolesMap[userId]);
+        return userRolesMap[userId];
+    }
+    return "Unknown";
+  };
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -23,22 +41,81 @@ const Project = () => {
       }
     };
 
-    const fetchSprints = async () => {
-      await fetch(`http://localhost:3001/api/sprints/${projectId}`)
+    const fetchActiveSprint = async () => {
+      //setIsLoading(true); // Start loading
+      await fetch(
+          `https://smrpo-acd88-default-rtdb.europe-west1.firebasedatabase.app/sprints.json`
+      )
           .then((response) => response.json())
-          .then((sprints) => {
+          .then((data) => {
             const currentDateTime = new Date(); // Get the current date and time
-            const activeSprints = sprints.filter((sprint) => {
+            const sprintsArray = Object.keys(data || {})
+                .map((key) => ({
+                      ...data[key],
+                      id: key,
+                }))
+              .filter((sprint) => sprint.projectId === projectId)
+              .filter((sprint) => {
                 const startDateTime = new Date(sprint.startTime);
                 const endDateTime = new Date(sprint.endTime);
-                return currentDateTime >= startDateTime && currentDateTime <= endDateTime;
-            });
-            setProjectSprints(activeSprints);
-        });
+                return currentDateTime >= startDateTime && currentDateTime <= endDateTime});
+              setActiveProjectSprints(sprintsArray);
+              //setIsLoading(false); // Data loaded
+          })
+          .catch((error) => {
+              console.error("Failed to fetch sprints:", error);
+              setActiveProjectSprints([]); // Fallback in case of error
+              //setIsLoading(false); // Data loading failed
+          }); 
     };
 
+    const fetchSprints = async () => {
+        //setIsLoading(true); // Start loading
+        fetch(
+            `https://smrpo-acd88-default-rtdb.europe-west1.firebasedatabase.app/sprints.json`
+        )
+            .then((response) => response.json())
+            .then((data) => {
+                const currentDateTime = new Date(); // Get the current date and time
+                const sprintsArray = Object.keys(data || {})
+                    .map((key) => ({
+                        ...data[key],
+                        id: key,
+                    }))
+                    .filter((sprint) => sprint.projectId === projectId)
+                    .filter((sprint) => {
+                      //const startDateTime = new Date(sprint.startTime);
+                      const endDateTime = new Date(sprint.endTime);
+                      return currentDateTime >= endDateTime})
+                    .filter((sprint) => sprint.storiesHandled == false);
+                    
+                setHandlingSprints(sprintsArray);
+                //setIsLoading(false); // Data loaded
+            })
+            .catch((error) => {
+                console.error("Failed to fetch sprints:", error);
+                setHandlingSprints([]); // Fallback in case of error
+                //setIsLoading(false); // Data loading failed
+            });
+    };
+
+    const fetchProjectRoles = async () => {
+      const fetchedProject = await getData(`/projects/${projectId}`);
+      if (fetchedProject) {
+          const users = Object.keys(fetchedProject.users).map((key) => ({
+              id: key,
+              ...fetchedProject.users[key],
+          }));
+          setProject({...fetchedProject, users}); // Merge existing properties with initialized users array
+          const currentUserRole = getCurrentUserRole(users); // Pass users array to getCurrentUserRole
+          setUserRole(currentUserRole);
+      }
+  };
+
     fetchProject();
+    fetchActiveSprint();
     fetchSprints();
+    fetchProjectRoles();
 
   }, [projectId])
 
@@ -79,9 +156,7 @@ const Project = () => {
             return null;
     }
   };
-  
-
-  
+    
   const TabComponent = renderTabComponent(activeTab);
   return (
     <div className="cons">
@@ -126,27 +201,39 @@ const Project = () => {
             <p className="current-sprint">
                     Active sprint: 
 
-                    {projectSprints.length == 0 && (
+                    {activeProjectSprints.length == 0 && (
                         <>
                             <span> </span>
-                            <span><b>There is no active sprint.</b></span>
+                            <span className="no-active-sprint"><b>There is no active sprint. </b></span>
+
                         </>
                     )}
-                    {projectSprints.length > 0 && (
+
+                    {activeProjectSprints.length > 0 && (
                         <>
                             <span> </span>
-                            <span><b>{projectSprints[0].sprintName}</b></span>
+                            <span><b>{activeProjectSprints[0].sprintName}</b></span>
                             <span> - </span>
-                            <span>{new Date(projectSprints[0].startTime).toLocaleString()}</span>
+                            <span>{new Date(activeProjectSprints[0].startTime).toLocaleString()} </span>
                             <span> to </span>
-                            <span>{new Date(projectSprints[0].endTime).toLocaleString()}</span>
+                            <span>{new Date(activeProjectSprints[0].endTime).toLocaleString()} </span>
+                            
                         </>
                     )}
+
+                    {handlingSprints.length > 0 && (
+                      <>
+                        <span><b> - </b></span>
+                        <Link to={`/projects/handle-sprint/${projectId}/${handlingSprints[0].id}`}>Handle user stories from previous sprint</Link>
+                      </>
+                    )}
+                    
               </p>
             <div>
               <div className="tabs">
                   <button className={activeTab === 'product_backlog' ? 'active' : ''} onClick={() => handleTabClick('product_backlog')}>Product Backlog</button>
-                  <button className={activeTab === 'sprint_backlog' ? 'active' : ''} onClick={() => handleTabClick('sprint_backlog')}>Sprint Backlog</button>
+                  {userRole !== "Unknown" && userRole !== "Project Owner" &&
+                  <button className={activeTab === 'sprint_backlog' ? 'active' : ''} onClick={() => handleTabClick('sprint_backlog')}>Sprint Backlog</button>}
               </div>
               <div className="tab-content">
                 <Suspense fallback={<div>Loading...</div>}>

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { addData } from "../../../db/realtimeDatabase";
+
 
 const AddSprint = () => {
 
@@ -11,16 +13,34 @@ const AddSprint = () => {
         projectId: projectId,
         startTime: "",
         endTime: "",
-        velocity: ""
+        velocity: "",
+        storiesHandled: false,
       });
 
     
     
     useEffect(() => {
       const fetchSprints = async () => {
-          await fetch(`http://localhost:3001/api/sprints/${projectId}`)
+          //setIsLoading(true); // Start loading
+          fetch(
+              `https://smrpo-acd88-default-rtdb.europe-west1.firebasedatabase.app/sprints.json`
+          )
               .then((response) => response.json())
-              .then(setProjectSprints);
+              .then((data) => {
+                  const sprintsArray = Object.keys(data || {})
+                      .map((key) => ({
+                          ...data[key],
+                          id: key,
+                      }))
+                      .filter((sprint) => sprint.projectId === projectId);
+                  setProjectSprints(sprintsArray);
+                  //setIsLoading(false); // Data loaded
+              })
+              .catch((error) => {
+                  console.error("Failed to fetch sprints:", error);
+                  setProjectSprints([]); // Fallback in case of error
+                  //setIsLoading(false); // Data loading failed
+              });
       };
       fetchSprints();
       console.log(projectSprints);
@@ -91,11 +111,15 @@ const AddSprint = () => {
             projectId: formData.projectId,
             startTime: formData.startTime,
             endTime: formData.endTime,
-            velocity: formData.velocity
+            velocity: formData.velocity,
+            storiesHandled: false
         };
 
         // Send the project data to the server
         try {
+
+            await addData(`/sprints`, sprintData);
+        /*
             const response = await fetch("http://localhost:3001/api/projects/createSprint", {
             method: "POST",
             headers: {
@@ -103,16 +127,9 @@ const AddSprint = () => {
             },
             body: JSON.stringify(sprintData),
             });
-        
-            if (response.ok) {
-            const data = await response.json();
+        */
             alert("Sprint added successfully");
             navigate(`/projects/listSprints/${projectId}`)
-            // Optionally reset form here or navigate to another page
-            } else {
-            const errorData = await response.json();
-            alert("Failed to add sprint: " + errorData.error);
-            }
         } catch (error) {
             console.error("Error submitting sprint:", error);
             alert("An error occurred. Please try again.");
