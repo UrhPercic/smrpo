@@ -14,8 +14,6 @@ const ProductBacklogTab = () => {
     const [showAddTaskForm, setShowAddTaskForm] = useState(false);
     const [selectedStory, setSelectedStory] = useState(null);
     const [editValues, setEditValues] = useState({});
-    const [currentUser, setCurrentUser] = useState({});
-    const [currentUserRole, setCurrentUserRole] = useState('');
     const [savedItems, setSavedItems] = useState([]);
     const [userRole, setUserRole] = useState("Unknown");
 
