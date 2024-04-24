@@ -43,7 +43,7 @@ const StoryTasksComponent = () => {
   }, [storyId]);
 
   const handleTaskClick = (taskId) => {
-    navigate("/projects/edit-task", { state: { taskId } });
+    navigate(`/projects/edit-task/${taskId}`);
   };
 
   return (
