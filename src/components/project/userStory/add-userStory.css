@@ -13,8 +13,32 @@
 
 .child {
     display: inline-block;
-    padding: 5rem 5em;
+    padding: 3rem 5em;
 }
+.form-group2 {
+    margin-top:10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.form-group2 .input-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.form-group2 .form-control {
+    width: 50%;
+    margin: auto;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.form-group2 .pts-label {
+    font-size: 16px;
+}
+
 .form-group1 .form-control {
     width: 40%;
     margin: auto;
