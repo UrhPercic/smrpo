@@ -9,6 +9,8 @@ const StoryTasksComponent = () => {
   const { storyId } = useParams();
   const [userStory, setUserStory] = useState(null);
   const [tasks, setTasks] = useState([]);
+  const [responsibleUsers, setResponsibleUsers] = useState({}); // State to store responsible users
+
   useEffect(() => {
     const fetchUserStory = async () => {
       try {
@@ -28,9 +30,24 @@ const StoryTasksComponent = () => {
               id: key,
               ...allTasks[key],
             }))
-            .filter((task) => task.user_story_id == storyId);
+            .filter((task) => task.user_story_id === storyId);
           setTasks(tasksArray);
-          console.log(allTasks);
+
+          // Fetch responsible user for each task
+          tasksArray.forEach(async (task) => {
+            try {
+              const responsibleUserData = await getData(
+                `/users/${task.responsible_user_id}`
+              );
+              // Update the responsibleUsers state with the responsible user data
+              setResponsibleUsers((prevUsers) => ({
+                ...prevUsers,
+                [task.id]: responsibleUserData,
+              }));
+            } catch (error) {
+              console.error("Error fetching responsible user:", error);
+            }
+          });
         }
       } catch (error) {
         console.error("Error fetching tasks:", error);
@@ -39,11 +56,12 @@ const StoryTasksComponent = () => {
 
     fetchUserStory();
     fetchTasks();
-    console.log(tasks);
   }, [storyId]);
 
-  const handleTaskClick = (taskId) => {
-    navigate(`/projects/edit-task/${taskId}`);
+  const handleTaskClick = (taskId, isAssigned) => {
+    if (!isAssigned) {
+      navigate(`/projects/edit-task/${taskId}`);
+    }
   };
 
   return (
@@ -52,9 +70,21 @@ const StoryTasksComponent = () => {
         {userStory !== null && <h1>User story - {userStory.userStoryName}</h1>}
         <div className="tasks">
           {tasks.map((task) => (
-            <div className="task" onClick={() => handleTaskClick(task.id)}>
-              {task.name}
-              {task.id}
+            <div
+              className="task"
+              key={task.id}
+              onClick={() =>
+                handleTaskClick(task.id, task.status === "Assigned")
+              }
+            >
+              <div className="task-user">
+                <strong>{task.name}</strong>
+                {responsibleUsers[task.id] && (
+                  <span className="responsible-user">
+                    Responsible user: {responsibleUsers[task.id].username}
+                  </span>
+                )}
+              </div>
               <i className="fa-solid fa-pen-to-square"></i>
             </div>
           ))}
