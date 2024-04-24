@@ -2,27 +2,31 @@ import React, {useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import {addData, getData} from "../../../db/realtimeDatabase";
 import "./add-userStory.css";
-import ReactMarkdown from "react-markdown";
-
 const AddUserStory = () => {
     const navigate = useNavigate();
     const {projectId} = useParams();
     const [priority] = useState(["Must Have", "Could Have", "Should Have", "Won't have this time"]);
     const [businessValue] = useState(["1", "2", "3","4", "5", "6","7", "8", "9","10"]);
     const [status] = useState(["Unrealised", "Realised_Unassigned", "Realised_Assigned"]);
-    const [formData, setFormData] = useState({
+     const [formData, setFormData] = useState({
         userStoryName: "",
         projectId: projectId,
         description: "",
         test: "",
         priority: "Must Have",
-        businessValue: "Low",
-        status: "Unrealised"
+        businessValue: "1",
+        status: "Unrealised",
+         time_estimate: 0,
+         notes:""
     });
 
 
     const handleChange = (e) => {
-        setFormData({...formData, [e.target.name]: e.target.value});
+        const { name, value } = e.target;
+        setFormData(prevFormData => ({
+            ...prevFormData,
+            [name]: name === "time_estimate" ? parseInt(value, 10) || 0 : value
+        }));
     };
     const handleAddTask = () => {
         navigate(`/projects/add-task/${projectId}`);
@@ -38,7 +42,9 @@ const AddUserStory = () => {
             test: formData.test,
             priority: formData.priority,
             businessValue: formData.businessValue,
-            status: formData.status
+            status: formData.status,
+            time_estimate: formData.time_estimate,
+            notes: formData.notes
         };
 
         const existingUserStories = await getData("/userStory");
@@ -150,6 +156,20 @@ const AddUserStory = () => {
                             <i className="fa-solid fa-plus"></i>
                         </button>
                     </div>
+                    <div className="form-group2">
+                        <label htmlFor="time_estimate">Time Estimate:</label>
+                        <div className="input-wrapper">
+                            <input
+                                className="form-control"
+                                name="time_estimate"
+                                id="time_estimate"
+                                value={formData.time_estimate}
+                                onChange={handleChange}
+                            />
+                            <span className="pts-label">pts</span>
+                        </div>
+                    </div>
+
                     <div className="button-wrapper">
                         <button className="btn btn-primary mr-3 add-button">Add Story</button>
                         <button className="btn btn-danger delete-button">Delete</button>

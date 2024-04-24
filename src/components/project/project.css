@@ -139,7 +139,6 @@
   margin-bottom: 15px;
   box-shadow: var(--box-shadow);
   transition: box-shadow 0.2s ease;
-  height: 230px;
   width: 400px;
   max-width: 400px;
   overflow: hidden;
@@ -245,4 +244,46 @@
   margin-bottom: 20px;
   color: #000000;
   font-size: 16px;
+}
+
+.time_estimate_container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.time_estimate_input {
+  flex-grow: 0;
+  width: auto;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.time_estimate_button {
+  padding: 5px 15px;
+  border: none;
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.time_estimate_button:hover {
+  background-color: #45a049;
+}
+
+.time_estimate_display {
+  padding: 5px;
+  background: transparent;
+  border-bottom: 1px dashed #ccc;
+  cursor: default;
+}
+
+
+.pts_label {
+  line-height: normal;
+  margin-left: 4px;
+  font-size: 1rem;
+  align-self: center;
 }
