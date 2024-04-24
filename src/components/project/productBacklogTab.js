@@ -1,6 +1,6 @@
 import React, {useState, useEffect, Suspense} from "react";
 import {Link, useParams, useNavigate} from "react-router-dom";
-import {getData} from "../../db/realtimeDatabase";
+import {addData, getData} from "../../db/realtimeDatabase";
 import {DragDropContext, Draggable, Droppable} from "react-beautiful-dnd";
 import "./sprintBacklogTab.css";
 import AddTask from "./add-task";
@@ -16,6 +16,10 @@ const ProductBacklogTab = () => {
     const [editValues, setEditValues] = useState({});
     const [savedItems, setSavedItems] = useState([]);
     const [userRole, setUserRole] = useState("Unknown");
+    const [messages, setMessages] = useState([]);
+    const [posts, setPosts] = useState([]);
+    const [currentUser, setCurrentUser] = useState({});
+    const [notes, setNotes] = useState({});
 
     const getCurrentUserRole = (users) => {
         const userId = localStorage.getItem("userId");
@@ -32,19 +36,54 @@ const ProductBacklogTab = () => {
         return "Unknown";
     };
 
-  useEffect(() => {
-    const fetchProject = async () => {
-      const fetchedProject = await getData(`/projects/${projectId}`);
-      if (fetchedProject) {
-        const users = Object.keys(fetchedProject.users).map((key) => ({
-          id: key,
-          ...fetchedProject.users[key],
-        }));
-        setProject({ ...fetchedProject, users }); // Merge existing properties with initialized users array
-        const currentUserRole = getCurrentUserRole(users); // Pass users array to getCurrentUserRole
-        setUserRole(currentUserRole);
-      }
-    };
+    useEffect(() => {
+        const loggedInUserId = localStorage.getItem("userId");
+        if (loggedInUserId) {
+            const fetchUserDetails = async () => {
+                try {
+                    const user = await getData(`/users/${loggedInUserId}`);
+                    setCurrentUser({username: user.username, userId: user.id});
+
+                } catch (error) {
+                    console.error("Error fetching user details or project details:", error);
+                }
+            };
+            if (loggedInUserId) {
+                fetchUserDetails();
+            }
+        }
+        const fetchMessages = async () => {
+            try {
+                const fetchedMessages = await getData("/notes");
+                const formattedMessages = Object.keys(fetchedMessages).filter((key) =>
+                    fetchedMessages[key].projectId === projectId
+                ).map((key) => {
+                    return {
+                        id: key,
+                        username: fetchedMessages[key].username,
+                        projectId: fetchedMessages[key].projectId,
+                        storyId: fetchedMessages[key].storyId,
+                        message: fetchedMessages[key].message || {},
+                    };
+                });
+                setMessages(formattedMessages);
+            } catch (error) {
+                console.error("Error fetching messages:", error);
+            }
+        };
+        fetchMessages();
+        const fetchProject = async () => {
+            const fetchedProject = await getData(`/projects/${projectId}`);
+            if (fetchedProject) {
+                const users = Object.keys(fetchedProject.users).map((key) => ({
+                    id: key,
+                    ...fetchedProject.users[key],
+                }));
+                setProject({...fetchedProject, users}); // Merge existing properties with initialized users array
+                const currentUserRole = getCurrentUserRole(users); // Pass users array to getCurrentUserRole
+                setUserRole(currentUserRole);
+            }
+        };
 
         const fetchStories = async () => {
             setIsLoading(true); // Start loading
@@ -158,6 +197,39 @@ const ProductBacklogTab = () => {
         setSavedItems([...savedItems, storyId]);
     };
 
+    const handleSubmit = async (e, storyId) => {
+        e.preventDefault();
+
+        if (!notes[storyId]) {
+            console.error("No note to submit");
+            return;
+        }
+
+        const newMessage = {
+            username: currentUser.username || 'testUser',
+            projectId: projectId,
+            storyId: storyId,
+            message: notes[storyId]
+        };
+
+        try {
+            const messageRef = await addData("/notes", newMessage);
+            setMessages([...messages, {...newMessage, id: messageRef.name}]);
+            setNotes(prevNotes => ({...prevNotes, [storyId]: ''})); // Reset the note for this story
+        } catch (error) {
+            console.error("Error adding new message:", error);
+        }
+    };
+
+
+    const handleChange = (e, storyId) => {
+        setNotes(prevNotes => ({
+            ...prevNotes,
+            [storyId]: e.target.value
+        }));
+    };
+
+
     const isSaved = (id) => savedItems.includes(id);
 
     const Column = ({title, status, stories, subColumns}) => {
@@ -231,90 +303,119 @@ const ProductBacklogTab = () => {
                                                 )}
                                             </p>
 
-                      <button
-                        className="add-task-button"
-                        onClick={() => handleAddTask(storyItem)}
-                      >
-                        Add Task
-                      </button>
-                      {userRole !== "Unknown" &&
-                        userRole !== "Project Owner" && (
-                          <button
-                            className="tasks-button"
-                            onClick={() => handleViewStory(storyItem)}
-                          >
-                            Tasks
-                          </button>
-                        )}
-                      
-                      {userRole === 'Scrum Master' && storyItem.status === 'Unrealised' ? (
-                        <>
-                        <button
-                          onClick={() => handleEditStory(storyItem.id)}
-                          className="edit-story-button"
-                        >
-                          Edit Story
-                        </button>
-                        </>
-                        ) : (
-                          <>
+                                            <button
+                                                className="add-task-button"
+                                                onClick={() => handleAddTask(storyItem)}
+                                            >
+                                                Add Task
+                                            </button>
+                                            {userRole !== "Unknown" &&
+                                                userRole !== "Project Owner" && (
+                                                    <button
+                                                        className="tasks-button"
+                                                        onClick={() => handleViewStory(storyItem)}
+                                                    >
+                                                        Tasks
+                                                    </button>
+                                                )}
 
-                          </>
-                      )}
+                                            {userRole === 'Scrum Master' && storyItem.status === 'Unrealised' ? (
+                                                <>
+                                                    <button
+                                                        onClick={() => handleEditStory(storyItem.id)}
+                                                        className="edit-story-button"
+                                                    >
+                                                        Edit Story
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <>
+
+                                                </>
+                                            )}
+                                            {userRole !== "Project Owner" && (
+                                            <form onSubmit={(e) => handleSubmit(e, storyItem.id)}>
+                                                <div className="form-group">
+                                                    <label htmlFor="message">Write a note</label>
+                                                    <textarea
+                                                        className="form-control"
+                                                        id={"message-" + storyItem.id}
+                                                        value={notes[storyItem.id] || ''}
+                                                        onChange={(e) => handleChange(e, storyItem.id)}
+                                                        required
+                                                    ></textarea>
+                                                </div>
+
+                                                    <button  className="time_estimate_button">
+                                                        Post notes
+                                                    </button>
+                                            </form>
+                                                )}
+                                            {userRole !== "Project Owner" && (
+                                            <div className="messages-list">
+                                                {messages
+                                                    .filter(post => post.storyId === storyItem.id) // Filter messages by storyId
+                                                    .map((post) => (
+                                                        <div key={post.id} className="message-item">
+                                                            <strong>{post.username}</strong>: {post.message}
+                                                        </div>
+                                                    ))}
+                                            </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </Draggable>
+                            ))}
+                        {provided.placeholder}
                     </div>
-                  )}
-                </Draggable>
-              ))}
-            {provided.placeholder}
-          </div>
-        )}
-      </Droppable>
-    );
+                )}
+            </Droppable>
+        );
+        return (
+            <div className="column">
+                <h3>{title}</h3>
+                {subColumns ? (
+                    <div className="sub-columns-container">
+                        {subColumns.map((subColumn) => (
+                            <div key={subColumn.status} className="sub-column">
+                                <h4>{subColumn.title}</h4>
+                                {renderContent(subColumn.status, stories)}
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    renderContent(status, stories)
+                )}
+            </div>
+        );
+    };
     return (
-      <div className="column">
-        <h3>{title}</h3>
-        {subColumns ? (
-          <div className="sub-columns-container">
-            {subColumns.map((subColumn) => (
-              <div key={subColumn.status} className="sub-column">
-                <h4>{subColumn.title}</h4>
-                {renderContent(subColumn.status, stories)}
-              </div>
-            ))}
-          </div>
-        ) : (
-          renderContent(status, stories)
-        )}
-      </div>
-    );
-  };
-  return (
-    <div className="stories-list">
-      <DragDropContext onDragEnd={onDragEnd}>
-        <div className="scrum-board-container">
-          <Column
-            title="Unrealised stories"
-            status="Unrealised"
-            stories={story}
-            subColumns={[
-              { title: "Unassigned", status: "Unrealised" },
-              {
-                title: "Assigned to current sprint",
-                status: "Unrealised_Active",
-              },
-            ]}
-          />
-          <Column
-            title="Realised stories"
-            stories={story}
-            status={"Realised"}
-          />
-        </div>
-      </DragDropContext>
-      {/* Conditionally render the AddTask component within a popup */}
-      {showAddTaskForm && (
-        <div className="popup-container">
-          <div className="popup">
+        <div className="stories-list">
+            <DragDropContext onDragEnd={onDragEnd}>
+                <div className="scrum-board-container">
+                    <Column
+                        title="Unrealised stories"
+                        status="Unrealised"
+                        stories={story}
+                        subColumns={[
+                            {title: "Unassigned", status: "Unrealised"},
+                            {
+                                title: "Assigned to current sprint",
+                                status: "Unrealised_Active",
+                            },
+                        ]}
+                    />
+                    <Column
+                        title="Realised stories"
+                        stories={story}
+                        status={"Realised"}
+                    />
+                </div>
+            </DragDropContext>
+            {/* Conditionally render the AddTask component within a popup */}
+            {showAddTaskForm && (
+                <div className="popup-container">
+                    <div className="popup">
             <span className="close" onClick={toggleAddTaskForm}>
               &times;
             </span>
