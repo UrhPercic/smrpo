@@ -1,0 +1,178 @@
+:root {
+    --bg-color: #f4f4f4;
+    --primary-color: #2878a9;
+    --delete-color: #D11A2A;
+    --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    --border-radius: 8px;
+    --padding: 1rem;
+    --margin: 1rem;
+
+}
+
+.story-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.story-card h4 {
+    color: #2878a9;
+    margin-top:  0.5rem;;
+    margin-bottom: 0.75rem;
+    font-size: 1.25rem;
+}
+  
+
+
+.story-card {
+    background-color: var(--bg-color);
+    border-radius: var(--border-radius);
+    padding: 10px;
+    margin-bottom: 15px;
+    box-shadow: var(--box-shadow);
+    transition: box-shadow 0.2s ease;
+    
+    width: 1000px;
+    max-height: 450px;
+    overflow: hidden;
+}
+
+.story-card:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.story-card p {
+    color: #333;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    /* Limit text to 2 lines */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    
+}
+
+.story-card p:last-child {
+    margin-bottom: 0;
+}
+
+.story-card .description-preview{
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    text-overflow: clip;
+    overflow: auto;
+}
+
+.story-card .businessValue {
+    color: #fff;
+    background-color: #27ae60;
+    display: inline-block;
+    padding: 0.5rem 0.5rem;
+    margin-right: 0.5rem;
+    border-radius: 5px;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+}
+
+.story-card .priority {
+    display: inline-block;
+    padding: 0.5rem 0.5rem;
+    margin-right: 0.5rem;
+    border-radius: 5px;
+    background-color: #f4f4f4;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+}
+
+.story-card .priority {
+    color: #fff;
+    background-color: #f39c12;
+}
+
+
+
+.story-card .test {
+    font-style: italic;
+    color: #007bff;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.switchbox {
+    position: sticky;
+    height: 100%;
+}
+
+.switch {
+    justify-content: space-between; /* Align items with space between */
+    align-items: center;
+    position: relative;
+    display: flex;
+    width: 60px;
+    height: 34px;
+    margin-bottom: 20px;
+}
+  
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+  
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+    border-radius: 34px;
+}
+  
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+  
+input:checked + .slider {
+    background-color: #2196f3;
+}
+  
+input:focus + .slider {
+    box-shadow: 0 0 1px #2196f3;
+}
+  
+input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+  
+
+.button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+    font-size: 16px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.button:hover {
+    background-color: #0056b3;
+  }
+
+.comment-input{
+    width: 50em;
+    height: 3em;
+}

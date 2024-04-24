@@ -25,6 +25,7 @@ import StoryTasksComponent from "./components/project/userStory-tasks/StoryTasks
 import Wall from "./components/wall/wall";
 import EditPassword from "./components/user-profile/edit-password";
 import EditTask from "./components/edit-task/edit-task";
+import HandleSprintStories from "./components/project/sprints/handle-sprint-stories"
 
 function App() {
   return (
@@ -87,6 +88,10 @@ function App() {
               <Route
                 path="/projects/story-tasks/:storyId"
                 element={<StoryTasksComponent />}
+              />
+              <Route
+                path="/projects/handle-sprint/:projectId/:sprintId"
+                element={<HandleSprintStories />}
               />
             </Route>
           </Routes>

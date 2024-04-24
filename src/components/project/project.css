@@ -68,6 +68,15 @@
   white-space: nowrap;
 }
 
+.disabled-column {
+  background-color: rgba(0, 130, 216, 0.1);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: var(--padding);
+  box-shadow: var(--box-shadow);
+}
+
 .column {
   flex: 1;
   display: flex;
@@ -198,6 +207,20 @@
 .story-section .priority {
   color: #fff;
   background-color: #f39c12;
+}
+
+.story-section .comment-on-return {
+  background-color: #6d0b12;
+  color: #fff;
+  display: inline-block;
+  padding: 0.3rem 0.3rem;
+  margin-right: 0.5rem;
+  border-radius: 5px;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+  max-width: 385px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 
@@ -345,4 +368,10 @@ textarea {
   color: white;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.no-active-sprint {
+  background-color: rgb(255, 185, 185);
+  padding: 3px;
+  border-radius: 6px;
 }
