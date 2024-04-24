@@ -21,6 +21,8 @@ const ProductBacklogTab = () => {
     const [currentUser, setCurrentUser] = useState({});
     const [notes, setNotes] = useState({});
     const [activeProjectSprints, setActiveProjectSprints] = useState([]);
+    const [handlingSprints, setHandlingSprints] = useState([]);
+
 
 
     const getCurrentUserRole = (users) => {
@@ -138,10 +140,41 @@ const ProductBacklogTab = () => {
               }); 
         };
 
+        const fetchhandleSprints = async () => {
+          //setIsLoading(true); // Start loading
+          fetch(
+              `https://smrpo-acd88-default-rtdb.europe-west1.firebasedatabase.app/sprints.json`
+          )
+              .then((response) => response.json())
+              .then((data) => {
+                  const currentDateTime = new Date(); // Get the current date and time
+                  const sprintsArray = Object.keys(data || {})
+                      .map((key) => ({
+                          ...data[key],
+                          id: key,
+                      }))
+                      .filter((sprint) => sprint.projectId === projectId)
+                      .filter((sprint) => {
+                        //const startDateTime = new Date(sprint.startTime);
+                        const endDateTime = new Date(sprint.endTime);
+                        return currentDateTime >= endDateTime})
+                      .filter((sprint) => sprint.storiesHandled == false);
+                      
+                  setHandlingSprints(sprintsArray);
+                  //setIsLoading(false); // Data loaded
+              })
+              .catch((error) => {
+                  console.error("Failed to fetch sprints:", error);
+                  setHandlingSprints([]); // Fallback in case of error
+                  //setIsLoading(false); // Data loading failed
+              });
+      };
+
 
         fetchStories();
         fetchProject();
         fetchActiveSprint();
+        fetchhandleSprints();
 
     }, [projectId]);
     if (isLoading) {
@@ -436,7 +469,7 @@ const ProductBacklogTab = () => {
                     <Column
                         title="Unrealised stories"
                         status="Unrealised"
-                        disabled={(userRole === "Project Owner" ? true : false) || (activeProjectSprints.length === 0 ? true : false)}
+                        disabled={(userRole === "Project Owner" ? true : false) || (handlingSprints.length > 0) || (activeProjectSprints.length === 0 ? true : false)}
                         stories={story}
                         subColumns={[
                             {
