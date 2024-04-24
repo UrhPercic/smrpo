@@ -13,13 +13,20 @@ const ProductBacklogTab = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showAddTaskForm, setShowAddTaskForm] = useState(false);
   const [selectedStory, setSelectedStory] = useState(null);
+  const [userRole, setUserRole] = useState("Unknown");
 
   useEffect(() => {
     const fetchProject = async () => {
       const fetchedProject = await getData(`/projects/${projectId}`);
       if (fetchedProject) {
-        console.log("Fetched project:", fetchedProject); // Log the fetched project
-        setProject(fetchedProject);
+        console.log("Fetched project:", fetchedProject);
+        const users = Object.keys(fetchedProject.users).map((key) => ({
+          id: key,
+          ...fetchedProject.users[key],
+        }));
+        setProject({ ...fetchedProject, users }); // Merge existing properties with initialized users array
+        const currentUserRole = getCurrentUserRole(users); // Pass users array to getCurrentUserRole
+        setUserRole(currentUserRole);
       }
     };
 
@@ -57,10 +64,25 @@ const ProductBacklogTab = () => {
     navigate(`/projects/edit-userStory/${storyId}`);
   };
 
+  const getCurrentUserRole = (users) => {
+    const userId = localStorage.getItem("userId");
+    const userRolesMap = users.reduce((acc, user) => {
+      const roleName = user[0];
+      const userId = user.id;
+      acc[userId] = roleName;
+      return acc;
+    }, {});
+    if (userRolesMap[userId]) {
+      console.log("User role found:", userRolesMap[userId]);
+      return userRolesMap[userId];
+    }
+    return "Unknown";
+  };
+
   const onDragEnd = async (result) => {
     const { source, destination, draggableId } = result;
 
-    if (!destination) return; // dropped outside a droppable area
+    if (!destination) return;
 
     const storyDragged = story.find((s) => s.id === draggableId);
     if (!storyDragged) return;
@@ -115,52 +137,56 @@ const ProductBacklogTab = () => {
     setShowAddTaskForm(!showAddTaskForm);
   };
 
-
-    const Column = ({ title, status, stories, subColumns }) => {
-        const renderContent = (status, stories) => (
-            <Droppable droppableId={status}>
-                {(provided, snapshot) => (
+  const Column = ({ title, status, stories, subColumns }) => {
+    const renderContent = (status, stories) => (
+      <Droppable droppableId={status}>
+        {(provided, snapshot) => (
+          <div
+            ref={provided.innerRef}
+            {...provided.droppableProps}
+            className={`sub-column-content ${
+              snapshot.isDraggingOver ? "droppable-over" : ""
+            }`}
+          >
+            {stories
+              .filter((item) => item.status === status)
+              .map((storyItem, index) => (
+                <Draggable
+                  key={storyItem.id}
+                  draggableId={storyItem.id}
+                  index={index}
+                >
+                  {(provided) => (
                     <div
-                        ref={provided.innerRef}
-                        {...provided.droppableProps}
-                        className={`sub-column-content ${
-                            snapshot.isDraggingOver ? "droppable-over" : ""
-                        }`}
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                      className={`story-section ${
+                        snapshot.isDragging ? "dragging-story" : ""
+                      }`}
                     >
-                        {stories
-                            .filter((item) => item.status === status)
-                            .map((storyItem, index) => (
-                                <Draggable
-                                    key={storyItem.id}
-                                    draggableId={storyItem.id}
-                                    index={index}
-                                >
-                                    {(provided) => (
-                                        <div
-                                            ref={provided.innerRef}
-                                            {...provided.draggableProps}
-                                            {...provided.dragHandleProps}
-                                            className={`story-section ${
-                                                snapshot.isDragging ? "dragging-story" : ""
-                                            }`}
-                                        >
-                                            <h4>{storyItem.userStoryName}</h4>
-                                            <div className="description-preview">
-                                                {storyItem.description.split("\n").map((line, index) => (
-                                                    <p key={index}>{line}</p>
-                                                ))}
-                                            </div>
+                      <h4>{storyItem.userStoryName}</h4>
+                      <div className="description-preview">
+                        {storyItem.description
+                          .split("\n")
+                          .map((line, index) => (
+                            <p key={index}>{line}</p>
+                          ))}
+                      </div>
 
-                                            <div className="test">
-                                                {storyItem.test.split("\n").map((line, index) => (
-                                                    <p key={index}>{line}</p>
-                                                ))}
-                                            </div>
-                                            <p>
-                                                Priority: <span className="priority">{storyItem.priority}</span>
-                                                Business Value: <span className="businessValue">{storyItem.businessValue}
-                            </span>
-                                            </p>
+                      <div className="test">
+                        {storyItem.test.split("\n").map((line, index) => (
+                          <p key={index}>{line}</p>
+                        ))}
+                      </div>
+                      <p>
+                        Priority:{" "}
+                        <span className="priority">{storyItem.priority}</span>
+                        Business Value:{" "}
+                        <span className="businessValue">
+                          {storyItem.businessValue}
+                        </span>
+                      </p>
 
                       <button
                         className="add-task-button"
@@ -168,12 +194,15 @@ const ProductBacklogTab = () => {
                       >
                         Add Task
                       </button>
-                      <button
-                        className="tasks-button"
-                        onClick={() => handleViewStory(storyItem)}
-                      >
-                        Tasks
-                      </button>
+                      {userRole !== "Unknown" &&
+                        userRole !== "Project owner" && (
+                          <button
+                            className="tasks-button"
+                            onClick={() => handleViewStory(storyItem)}
+                          >
+                            Tasks
+                          </button>
+                        )}
                       <button
                         onClick={() => handleEditStory(storyItem.id)}
                         className="edit-story-button"
