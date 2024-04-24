@@ -248,12 +248,21 @@ const ProductBacklogTab = () => {
                             Tasks
                           </button>
                         )}
-                      <button
-                        onClick={() => handleEditStory(storyItem.id)}
-                        className="edit-story-button"
-                      >
-                        Edit Story
-                      </button>
+                      
+                      {userRole === 'Scrum Master' && storyItem.status === 'Unrealised' ? (
+                        <>
+                        <button
+                          onClick={() => handleEditStory(storyItem.id)}
+                          className="edit-story-button"
+                        >
+                          Edit Story
+                        </button>
+                        </>
+                        ) : (
+                          <>
+
+                          </>
+                      )}
                     </div>
                   )}
                 </Draggable>
