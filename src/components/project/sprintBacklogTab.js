@@ -34,7 +34,7 @@ const SprintBacklogTab = () => {
               id: key,
             }))
             .filter((story) => story.projectId === projectId)
-            .filter((story) => story.status === "Realised_Assigned");
+            .filter((story) => story.status === "Unrealised_Active");
           console.log(storiesArray);
           setIsLoading(false);
         })

@@ -289,19 +289,18 @@ const ProductBacklogTab = () => {
             title="Unrealised stories"
             status="Unrealised"
             stories={story}
-            style={{ flex: "1", marginRight: "50px" }} // Adjust width here
+            subColumns={[
+              { title: "Unassigned", status: "Unrealised" },
+              {
+                title: "Assigned to current sprint",
+                status: "Unrealised_Active",
+              },
+            ]}
           />
           <Column
             title="Realised stories"
             stories={story}
-            subColumns={[
-              { title: "Unassigned", status: "Realised_Unassigned" },
-              {
-                title: "Assigned to current sprint",
-                status: "Realised_Assigned",
-              },
-            ]}
-            style={{ flex: "1", marginRight: "50px" }} // Adjust width here
+            status={"Realised"}
           />
         </div>
       </DragDropContext>
