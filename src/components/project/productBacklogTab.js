@@ -17,15 +17,36 @@ const ProductBacklogTab = () => {
     const [currentUser, setCurrentUser] = useState({});
     const [currentUserRole, setCurrentUserRole] = useState('');
     const [savedItems, setSavedItems] = useState([]);
+    const [userRole, setUserRole] = useState("Unknown");
 
+    const getCurrentUserRole = (users) => {
+        const userId = localStorage.getItem("userId");
+        const userRolesMap = users.reduce((acc, user) => {
+            const roleName = user[0];
+            const userId = user.id;
+            acc[userId] = roleName;
+            return acc;
+        }, {});
+        if (userRolesMap[userId]) {
+            console.log("User role found:", userRolesMap[userId]);
+            return userRolesMap[userId];
+        }
+        return "Unknown";
+    };
 
-    useEffect(() => {
-        const fetchProject = async () => {
-            const fetchedProject = await getData(`/projects/${projectId}`);
-            if (fetchedProject) {
-                setProject(fetchedProject);
-            }
-        };
+  useEffect(() => {
+    const fetchProject = async () => {
+      const fetchedProject = await getData(`/projects/${projectId}`);
+      if (fetchedProject) {
+        const users = Object.keys(fetchedProject.users).map((key) => ({
+          id: key,
+          ...fetchedProject.users[key],
+        }));
+        setProject({ ...fetchedProject, users }); // Merge existing properties with initialized users array
+        const currentUserRole = getCurrentUserRole(users); // Pass users array to getCurrentUserRole
+        setUserRole(currentUserRole);
+      }
+    };
 
         const fetchStories = async () => {
             setIsLoading(true); // Start loading
@@ -49,29 +70,6 @@ const ProductBacklogTab = () => {
                     setIsLoading(false); // Data loading failed
                 });
         };
-        const loggedInUserId = localStorage.getItem("userId");
-        if (loggedInUserId) {
-            const fetchUserDetails = async () => {
-                try {
-                    const user = await getData(`/users/${loggedInUserId}`);
-                    setCurrentUser({username: user.username, userId: user.id});
-
-                    const project = await getData(`/projects/${projectId}`);
-                    if (project && project.users) {
-                        const userRoles = project.users[loggedInUserId];
-                        if (userRoles && userRoles.includes("Scrum Master")) {
-                            // User has "Scrum Master" role
-                            setCurrentUserRole("Scrum Master");
-                        }
-                    }
-                } catch (error) {
-                    console.error("Error fetching user details or project details:", error);
-                }
-            };
-            if (loggedInUserId) {
-                fetchUserDetails();
-            }
-        }
 
         fetchStories();
         fetchProject();
@@ -87,7 +85,7 @@ const ProductBacklogTab = () => {
     const onDragEnd = async (result) => {
         const {source, destination, draggableId} = result;
 
-        if (!destination) return; // dropped outside a droppable area
+    if (!destination) return;
 
         const storyDragged = story.find((s) => s.id === draggableId);
         if (!storyDragged) return;
@@ -211,7 +209,7 @@ const ProductBacklogTab = () => {
                                             </p>
                                             <p key={storyItem.id} className="time_estimate_container">
                                                 Time Estimate:
-                                                {currentUserRole === 'Scrum Master' && storyItem.status === 'Unrealised' ? (
+                                                {userRole === 'Scrum Master' && storyItem.status === 'Unrealised' ? (
                                                     <>
                                                         <input
                                                             type="number"
@@ -237,80 +235,82 @@ const ProductBacklogTab = () => {
                                                 )}
                                             </p>
 
-
-                                            <button
-                                                className="add-task-button"
-                                                onClick={() => handleAddTask(storyItem)}
-                                            >
-                                                Add Task
-                                            </button>
-                                            <button
-                                                className="tasks-button"
-                                                onClick={() => handleViewStory(storyItem)}
-                                            >
-                                                Tasks
-                                            </button>
-                                            <button
-                                                onClick={() => handleEditStory(storyItem.id)}
-                                                className="edit-story-button"
-                                            >
-                                                Edit Story
-                                            </button>
-                                        </div>
-                                    )}
-                                </Draggable>
-                            ))}
-                        {provided.placeholder}
+                      <button
+                        className="add-task-button"
+                        onClick={() => handleAddTask(storyItem)}
+                      >
+                        Add Task
+                      </button>
+                      {userRole !== "Unknown" &&
+                        userRole !== "Project owner" && (
+                          <button
+                            className="tasks-button"
+                            onClick={() => handleViewStory(storyItem)}
+                          >
+                            Tasks
+                          </button>
+                        )}
+                      <button
+                        onClick={() => handleEditStory(storyItem.id)}
+                        className="edit-story-button"
+                      >
+                        Edit Story
+                      </button>
                     </div>
-                )}
-            </Droppable>
-        );
-        return (
-            <div className="column">
-                <h3>{title}</h3>
-                {subColumns ? (
-                    <div className="sub-columns-container">
-                        {subColumns.map((subColumn) => (
-                            <div key={subColumn.status} className="sub-column">
-                                <h4>{subColumn.title}</h4>
-                                {renderContent(subColumn.status, stories)}
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    renderContent(status, stories)
-                )}
-            </div>
-        );
-    };
+                  )}
+                </Draggable>
+              ))}
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
+    );
     return (
-        <div className="stories-list">
-            <DragDropContext onDragEnd={onDragEnd}>
-                <div className="scrum-board-container">
-                    <Column
-                        title="Unrealised stories"
-                        status="Unrealised"
-                        stories={story}
-                        style={{flex: "1", marginRight: "50px"}} // Adjust width here
-                    />
-                    <Column
-                        title="Realised stories"
-                        stories={story}
-                        subColumns={[
-                            {title: "Unassigned", status: "Realised_Unassigned"},
-                            {
-                                title: "Assigned to current sprint",
-                                status: "Realised_Assigned",
-                            },
-                        ]}
-                        style={{flex: "1", marginRight: "50px"}} // Adjust width here
-                    />
-                </div>
-            </DragDropContext>
-            {/* Conditionally render the AddTask component within a popup */}
-            {showAddTaskForm && (
-                <div className="popup-container">
-                    <div className="popup">
+      <div className="column">
+        <h3>{title}</h3>
+        {subColumns ? (
+          <div className="sub-columns-container">
+            {subColumns.map((subColumn) => (
+              <div key={subColumn.status} className="sub-column">
+                <h4>{subColumn.title}</h4>
+                {renderContent(subColumn.status, stories)}
+              </div>
+            ))}
+          </div>
+        ) : (
+          renderContent(status, stories)
+        )}
+      </div>
+    );
+  };
+  return (
+    <div className="stories-list">
+      <DragDropContext onDragEnd={onDragEnd}>
+        <div className="scrum-board-container">
+          <Column
+            title="Unrealised stories"
+            status="Unrealised"
+            stories={story}
+            style={{ flex: "1", marginRight: "50px" }} // Adjust width here
+          />
+          <Column
+            title="Realised stories"
+            stories={story}
+            subColumns={[
+              { title: "Unassigned", status: "Realised_Unassigned" },
+              {
+                title: "Assigned to current sprint",
+                status: "Realised_Assigned",
+              },
+            ]}
+            style={{ flex: "1", marginRight: "50px" }} // Adjust width here
+          />
+        </div>
+      </DragDropContext>
+      {/* Conditionally render the AddTask component within a popup */}
+      {showAddTaskForm && (
+        <div className="popup-container">
+          <div className="popup">
             <span className="close" onClick={toggleAddTaskForm}>
               &times;
             </span>
