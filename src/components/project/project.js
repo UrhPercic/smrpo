@@ -221,7 +221,15 @@ const Project = () => {
                         </>
                     )}
 
-                    {handlingSprints.length > 0 && (
+                    {handlingSprints.length > 0 && userRole != "Project Owner" &&
+                      <>
+                      <span> - </span>
+                      <span><b> Waiting for sprint review. </b></span>
+
+                    </>
+                    }
+
+                    {(handlingSprints.length > 0 && userRole == "Project Owner" &&
                       <>
                         <span><b> - </b></span>
                         <Link to={`/projects/handle-sprint/${projectId}/${handlingSprints[0].id}`}>Handle user stories from previous sprint</Link>
