@@ -15,6 +15,21 @@ const ProductBacklogTab = () => {
   const [selectedStory, setSelectedStory] = useState(null);
   const [userRole, setUserRole] = useState("Unknown");
 
+  const getCurrentUserRole = (users) => {
+    const userId = localStorage.getItem("userId");
+    const userRolesMap = users.reduce((acc, user) => {
+      const roleName = user[0];
+      const userId = user.id;
+      acc[userId] = roleName;
+      return acc;
+    }, {});
+    if (userRolesMap[userId]) {
+      console.log("User role found:", userRolesMap[userId]);
+      return userRolesMap[userId];
+    }
+    return "Unknown";
+  };
+
   useEffect(() => {
     const fetchProject = async () => {
       const fetchedProject = await getData(`/projects/${projectId}`);
@@ -62,21 +77,6 @@ const ProductBacklogTab = () => {
 
   const handleEditStory = (storyId) => {
     navigate(`/projects/edit-userStory/${storyId}`);
-  };
-
-  const getCurrentUserRole = (users) => {
-    const userId = localStorage.getItem("userId");
-    const userRolesMap = users.reduce((acc, user) => {
-      const roleName = user[0];
-      const userId = user.id;
-      acc[userId] = roleName;
-      return acc;
-    }, {});
-    if (userRolesMap[userId]) {
-      console.log("User role found:", userRolesMap[userId]);
-      return userRolesMap[userId];
-    }
-    return "Unknown";
   };
 
   const onDragEnd = async (result) => {
