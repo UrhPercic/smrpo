@@ -195,7 +195,7 @@ const ProductBacklogTab = () => {
                         Add Task
                       </button>
                       {userRole !== "Unknown" &&
-                        userRole !== "Project owner" && (
+                        userRole !== "Project Owner" && (
                           <button
                             className="tasks-button"
                             onClick={() => handleViewStory(storyItem)}
