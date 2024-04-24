@@ -229,7 +229,9 @@ const DailyScrum = ({addPost, posts}) => {
                 <div className="messages-list">
                     {messages.map((post) => (
                         <div key={post.id} className="message-item">
-                            <strong>{post.username}</strong>: {post.message}
+                            <strong>{post.username}</strong>: {post.message.split("\n").map((line, index) => (
+                            <p key={index}>{line}</p>
+                        ))}
                             <div className="comment-section">
                                 <input
                                     type="text"
@@ -237,14 +239,14 @@ const DailyScrum = ({addPost, posts}) => {
                                     onChange={(e) => handleCommentChange(post.id, e.target.value)}
                                     placeholder="Write a comment..."
                                 />
-                                <button onClick={() => handleSubmitComment(post.id)}>Comment</button>
+                                <button className= "comment-post" onClick={() => handleSubmitComment(post.id)}>Comment</button>
                                 {/* Displaying comments here */}
                                 <div className="comments-display">
                                     {post.comments && Object.entries(post.comments).map(([commentId, comment]) => (
                                         <div key={commentId} className="comment">
                                             <strong>{comment.username}</strong>: {comment.text}
                                             {currentUserRole === 'Scrum Master' && (
-                                                <button onClick={() => deleteComment(post.id, commentId)}>Delete Comment</button>
+                                                <button className= "delete" onClick={() => deleteComment(post.id, commentId)}>Delete Comment</button>
                                             )}
                                         </div>
 
@@ -253,7 +255,7 @@ const DailyScrum = ({addPost, posts}) => {
                             </div>
                             <div>
                                 {currentUserRole === 'Scrum Master' && (
-                                    <button onClick={() => deletePostAndComments(post.id)}>Delete Post</button>
+                                    <button className= "delete" onClick={() => deletePostAndComments(post.id)}>Delete Post</button>
                                 )}
                             </div>
                         </div>
