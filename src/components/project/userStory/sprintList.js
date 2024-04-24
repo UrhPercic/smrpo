@@ -8,6 +8,23 @@ const Sprints = () => {
     const navigate = useNavigate();
     const [project, setProject] = useState({users: []}); // Initialize users as an empty array
     const [projectSprints, setProjectSprints] = useState([]);
+    const [userRole, setUserRole] = useState("Unknown");
+
+
+    const getCurrentUserRole = (users) => {
+        const userId = localStorage.getItem("userId");
+        const userRolesMap = users.reduce((acc, user) => {
+            const roleName = user[0];
+            const userId = user.id;
+            acc[userId] = roleName;
+            return acc;
+        }, {});
+        if (userRolesMap[userId]) {
+            console.log("User role found:", userRolesMap[userId]);
+            return userRolesMap[userId];
+        }
+        return "Unknown";
+    };
 
     useEffect(() => {
         const fetchProject = async () => {
@@ -40,9 +57,23 @@ const Sprints = () => {
                     //setIsLoading(false); // Data loading failed
                 });
         };
+        const fetchProjectRoles = async () => {
+            const fetchedProject = await getData(`/projects/${projectId}`);
+            if (fetchedProject) {
+                const users = Object.keys(fetchedProject.users).map((key) => ({
+                    id: key,
+                    ...fetchedProject.users[key],
+                }));
+                setProject({...fetchedProject, users}); // Merge existing properties with initialized users array
+                const currentUserRole = getCurrentUserRole(users); // Pass users array to getCurrentUserRole
+                setUserRole(currentUserRole);
+            }
+        };
         
         fetchSprints();
         fetchProject();
+        fetchProjectRoles();
+
     }, [projectId]);
 
     const handleEdit = () => {
@@ -114,7 +145,7 @@ const Sprints = () => {
                     <>
                         <div className="project-header">
                             <h1>{project.name}</h1>
-                            <div>
+                            <div>                                
                                 <button onClick={handleEdit} className="default-button">
                                     Edit Project
                                     <i class="fa-solid fa-pen-to-square"></i>
@@ -123,10 +154,12 @@ const Sprints = () => {
                                     Add Story
                                     <i className="fa-solid fa-book"></i>
                                 </button>
+                                {userRole == "Scrum Master" && (
                                 <button onClick={handleAddSprint} className="default-button">
                                     Add Sprint
                                     <i class="fa-solid fa-plus"></i>
                                 </button>
+                                )}
                             </div>
                         </div>
                         <p className="preserve-whitespace">Description: {project.description}</p>
@@ -173,13 +206,13 @@ const Sprints = () => {
                   <div className="progress-bar-container">
                     <div className="progress-bar" style={{ width: `${progress}%` }}></div>
                   </div>
-                  {!isFinished && <div className="edit-sprint-button">
-                    <Link to={`/projects/edit-sprint/${projectId}/${sprint.id}`}>Edit Sprint</Link>
-                  </div>}
-                  {!isFinished && !isActive && 
-                    (<div className="delete-sprint-button" onClick={() => deleteSprint(sprint.id)}>
-                        Delete Sprint
-                    </div>)}
+                    {!isFinished && userRole == "Scrum Master" &&<div className="edit-sprint-button">
+                        <Link to={`/projects/edit-sprint/${projectId}/${sprint.id}`}>Edit Sprint</Link>
+                    </div>}
+                    {!isFinished && !isActive && userRole == "Scrum Master" && 
+                        (<div className="delete-sprint-button" onClick={() => deleteSprint(sprint.id)}>
+                            Delete Sprint
+                        </div>)}
                 </div>
                 )
               }
