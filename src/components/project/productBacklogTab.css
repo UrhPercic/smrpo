@@ -22,30 +22,6 @@
     white-space: nowrap;
 }
 
-.column {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: var(--padding);
-    box-shadow: var(--box-shadow);
-
-}
-
-.column h3 {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
-
-.column h4 {
-    white-space: normal;
-    overflow-wrap: break-word;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
 
 .add-task {
     background-color: #e9ecef;
@@ -147,11 +123,11 @@
 }
 
 
-
 .story-section .test {
     font-style: italic;
     color: #007bff;
 }
+
 
 .edit-story-button {
     display: inline-block;

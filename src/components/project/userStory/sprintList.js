@@ -18,13 +18,29 @@ const Sprints = () => {
             }
         };
 
-
         const fetchSprints = async () => {
-            fetch(`http://localhost:3001/api/sprints/${projectId}`)
+            //setIsLoading(true); // Start loading
+            fetch(
+                `https://smrpo-acd88-default-rtdb.europe-west1.firebasedatabase.app/sprints.json`
+            )
                 .then((response) => response.json())
-                .then(setProjectSprints);
+                .then((data) => {
+                    const sprintsArray = Object.keys(data || {})
+                        .map((key) => ({
+                            ...data[key],
+                            id: key,
+                        }))
+                        .filter((sprint) => sprint.projectId === projectId);
+                    setProjectSprints(sprintsArray);
+                    //setIsLoading(false); // Data loaded
+                })
+                .catch((error) => {
+                    console.error("Failed to fetch sprints:", error);
+                    setProjectSprints([]); // Fallback in case of error
+                    //setIsLoading(false); // Data loading failed
+                });
         };
-
+        
         fetchSprints();
         fetchProject();
     }, [projectId]);
@@ -88,7 +104,7 @@ const Sprints = () => {
             minute: 'numeric',
             second: 'numeric',
         };
-        return dateTime.toLocaleDateString('en-US', options);
+        return dateTime.toLocaleDateString('en-GB', options);
     };
 
     return (

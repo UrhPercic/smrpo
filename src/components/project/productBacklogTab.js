@@ -20,6 +20,8 @@ const ProductBacklogTab = () => {
     const [posts, setPosts] = useState([]);
     const [currentUser, setCurrentUser] = useState({});
     const [notes, setNotes] = useState({});
+    const [activeProjectSprints, setActiveProjectSprints] = useState([]);
+
 
     const getCurrentUserRole = (users) => {
         const userId = localStorage.getItem("userId");
@@ -108,8 +110,39 @@ const ProductBacklogTab = () => {
                 });
         };
 
+        const fetchActiveSprint = async () => {
+          //setIsLoading(true); // Start loading
+          fetch(
+              `https://smrpo-acd88-default-rtdb.europe-west1.firebasedatabase.app/sprints.json`
+          )
+              .then((response) => response.json())
+              .then((data) => {
+                const currentDateTime = new Date(); // Get the current date and time
+                const sprintsArray = Object.keys(data || {})
+                    .map((key) => ({
+                          ...data[key],
+                          id: key,
+                    }))
+                  .filter((sprint) => sprint.projectId === projectId)
+                  .filter((sprint) => {
+                    const startDateTime = new Date(sprint.startTime);
+                    const endDateTime = new Date(sprint.endTime);
+                    return currentDateTime >= startDateTime && currentDateTime <= endDateTime});
+                  setActiveProjectSprints(sprintsArray);
+                  //setIsLoading(false); // Data loaded
+              })
+              .catch((error) => {
+                  console.error("Failed to fetch sprints:", error);
+                  setActiveProjectSprints([]); // Fallback in case of error
+                  //setIsLoading(false); // Data loading failed
+              }); 
+        };
+
+
         fetchStories();
         fetchProject();
+        fetchActiveSprint();
+
     }, [projectId]);
     if (isLoading) {
         return <div>Loading stories...</div>;
@@ -232,9 +265,9 @@ const ProductBacklogTab = () => {
 
     const isSaved = (id) => savedItems.includes(id);
 
-    const Column = ({title, status, stories, subColumns}) => {
+    const Column = ({title, status, stories, subColumns, disabled}) => {
         const renderContent = (status, stories) => (
-            <Droppable droppableId={status}>
+            <Droppable droppableId={status} isDropDisabled={disabled}>
                 {(provided, snapshot) => (
                     <div
                         ref={provided.innerRef}
@@ -250,6 +283,7 @@ const ProductBacklogTab = () => {
                                     key={storyItem.id}
                                     draggableId={storyItem.id}
                                     index={index}
+                                    isDragDisabled={disabled}
                                 >
                                     {(provided) => (
                                         <div
@@ -302,7 +336,11 @@ const ProductBacklogTab = () => {
                                                     </>
                                                 )}
                                             </p>
-
+                                            {typeof storyItem.commentOnReturn != "undefined" && 
+                                            <p>
+                                              <span className="comment-on-return"><b>Comment: </b>{storyItem.commentOnReturn}</span>
+                                            </p>
+                                            }
                                             <button
                                                 className="add-task-button"
                                                 onClick={() => handleAddTask(storyItem)}
@@ -374,7 +412,7 @@ const ProductBacklogTab = () => {
             </Droppable>
         );
         return (
-            <div className="column">
+            <div className={`column ${disabled ? "disabled-column" : ""}`}>
                 <h3>{title}</h3>
                 {subColumns ? (
                     <div className="sub-columns-container">
@@ -398,9 +436,13 @@ const ProductBacklogTab = () => {
                     <Column
                         title="Unrealised stories"
                         status="Unrealised"
+                        disabled={(userRole === "Project Owner" ? true : false) || (activeProjectSprints.length === 0 ? true : false)}
                         stories={story}
                         subColumns={[
-                            {title: "Unassigned", status: "Unrealised"},
+                            {
+                              title: "Unassigned",
+                              status: "Unrealised",
+                            },
                             {
                                 title: "Assigned to current sprint",
                                 status: "Unrealised_Active",
@@ -411,6 +453,7 @@ const ProductBacklogTab = () => {
                         title="Realised stories"
                         stories={story}
                         status={"Realised"}
+                        disabled={true}
                     />
                 </div>
             </DragDropContext>
