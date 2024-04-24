@@ -346,13 +346,14 @@ const ProductBacklogTab = () => {
                                                     ></textarea>
                                                 </div>
 
-                                                    <button  className="time_estimate_button">
+                                                    <button  className="post_button">
                                                         Post notes
                                                     </button>
                                             </form>
                                                 )}
                                             {userRole !== "Project Owner" && (
                                             <div className="messages-list">
+                                                <small>
                                                 {messages
                                                     .filter(post => post.storyId === storyItem.id) // Filter messages by storyId
                                                     .map((post) => (
@@ -360,6 +361,7 @@ const ProductBacklogTab = () => {
                                                             <strong>{post.username}</strong>: {post.message}
                                                         </div>
                                                     ))}
+                                                </small>
                                             </div>
                                             )}
                                         </div>
