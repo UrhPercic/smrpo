@@ -14,6 +14,23 @@ const ProjectEditForm = () => {
   const [newUserId, setNewUserId] = useState('');
   const [newUserRole, setNewUserRole] = useState('');
   const [originalName, setOriginalName] = useState("");
+  const [userRole, setUserRole] = useState("Unknown");
+  const [project, setProject] = useState({users: []});
+
+  const getCurrentUserRole = (users) => {
+    const userId = localStorage.getItem("userId");
+    const userRolesMap = users.reduce((acc, user) => {
+        const roleName = user[0];
+        const userId = user.id;
+        acc[userId] = roleName;
+        return acc;
+    }, {});
+    if (userRolesMap[userId]) {
+        console.log("User role found:", userRolesMap[userId]);
+        return userRolesMap[userId];
+    }
+    return "Unknown";
+};
 
 
   useEffect(() => {
@@ -24,6 +41,9 @@ const ProjectEditForm = () => {
       if (projectData && typeof projectData.users === 'object' && !Array.isArray(projectData.users)) {
         // Convert users object into an array
         setOriginalName(projectData.name);
+        const users = Object.keys(projectData.users).map((key) => ({
+          id: key,
+        }));
         const usersArray = Object.entries(projectData.users).map(([userId, roles]) => {
           const foundUser = usersData.find(u => u.id === userId);
           return {
@@ -37,6 +57,19 @@ const ProjectEditForm = () => {
           description: projectData.description,
           users: usersArray,
         });
+        const fetchProject = async () => {
+          const fetchedProject = await getData(`/projects/${projectId}`);
+          if (fetchedProject) {
+            const users = Object.keys(fetchedProject.users).map((key) => ({
+              id: key,
+              ...fetchedProject.users[key],
+            }));
+            setProject({ ...fetchedProject, users }); // Merge existing properties with initialized users array
+            const currentUserRole = getCurrentUserRole(users); // Pass users array to getCurrentUserRole
+            setUserRole(currentUserRole);
+          }
+        };
+        fetchProject();
       } else {
         console.error('Unexpected structure for users:', projectData.users);
       }
@@ -99,6 +132,7 @@ const ProjectEditForm = () => {
       ...prevData,
       users: prevData.users.filter(user => user.userId !== userIdToRemove)
     }));
+    console.log(userRole)
   };
 
   const validateRoles = () => {
@@ -127,6 +161,7 @@ const ProjectEditForm = () => {
       // Check for name clash excluding the current project if it is the same as the original
       const nameExists = projectsData.some(project => project.name === newName && project.name !== originalName);
   
+      
       return nameExists;
     } catch (error) {
       console.error('Error checking project name:', error);
@@ -166,6 +201,7 @@ const ProjectEditForm = () => {
       });
   
       if (response.ok) {
+        
         alert("Project updated successfully");
       } else {
         const errorData = await response.json();
@@ -247,7 +283,17 @@ const ProjectEditForm = () => {
         {/* Button container for alignment */}
         <div className="d-flex justify-content-start align-items-center">
           <button type="button" className="btn btn-primary me-2" onClick={addNewUser}>Add User</button>
-          <button type="submit" className="btn btn-success">Update Project</button>
+          
+          {userRole === 'Scrum Master' ? (
+                        <>
+                        <button type="submit" className="btn btn-success">Update Project</button>
+                        
+                        </>
+                        ) : (
+                          <>
+
+                          </>
+                      )}
         </div>
 
       </form>
