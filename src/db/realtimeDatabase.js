@@ -38,20 +38,19 @@ export const updateData = async (path, data) => {
   const dbRef = ref(db, path);
   try {
     await update(dbRef, data);
-    console.log("Data updated successfully");
   } catch (error) {
     console.error("Failed to update data", error);
   }
 };
 
 export const deleteData = async (path) => {
-    const db = getDatabase();
-    const dataRef = ref(db, path);
-    try {
-        await remove(dataRef);
-        console.log("Data removed successfully");
-    } catch (error) {
-        console.error("Failed to remove data", error);
-        throw error; // This allows error handling in the component that calls deleteData
-    }
+  const db = getDatabase();
+  const dataRef = ref(db, path);
+  try {
+    await remove(dataRef);
+    console.log("Data removed successfully");
+  } catch (error) {
+    console.error("Failed to remove data", error);
+    throw error; // This allows error handling in the component that calls deleteData
+  }
 };
