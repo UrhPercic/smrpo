@@ -303,12 +303,17 @@ const ProductBacklogTab = () => {
                                                 )}
                                             </p>
 
+                                            {userRole !== "Unknown" &&
+                                                userRole !== "Project Owner" && (
+
                                             <button
                                                 className="add-task-button"
                                                 onClick={() => handleAddTask(storyItem)}
                                             >
                                                 Add Task
                                             </button>
+
+                                                )}
                                             {userRole !== "Unknown" &&
                                                 userRole !== "Project Owner" && (
                                                     <button
