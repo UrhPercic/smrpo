@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getDatabase, ref, push } from "firebase/database";
+import { useParams, useNavigate } from "react-router-dom";
 import { getData } from "../../db/realtimeDatabase";
 // Import Bootstrap CSS in your main file if not already imported
 // import 'bootstrap/dist/css/bootstrap.min.css';
@@ -12,12 +13,21 @@ const AddProjectForm = () => {
   });
   const [availableUsers, setAvailableUsers] = useState([]);
   const [roles] = useState(["Project Owner", "Scrum Master", "Development Team Member"]);
+  const navigate = useNavigate();
 
 
   useEffect(() => {
     // Fetch available users
-    fetch("http://localhost:3001/api/users")
-      .then((response) => response.json())
+    fetch("https://smrpo-acd88-default-rtdb.europe-west1.firebasedatabase.app/users.json")
+        .then(res => res.json())
+        .then((users) => {
+          const usersArray = Object.keys(users).map(key => ({
+            id: key,
+            ...users[key]
+          }));
+          console.log(usersArray);
+          return usersArray;
+        })
       .then(setAvailableUsers);
   }, []);
 
@@ -87,6 +97,7 @@ const AddProjectForm = () => {
 
 
   const handleSubmit = async (e) => {
+    
     e.preventDefault();
 
     if (!validateRoles()) {
@@ -115,6 +126,7 @@ const AddProjectForm = () => {
       push(ref(db, 'projects'), projectData)
         .then(() => {
           alert("Project added successfully");
+          navigate("/home");
         })
         .catch((error) => {
           console.error("Failed to add project:", error);
@@ -176,7 +188,7 @@ const AddProjectForm = () => {
           </div>
         ))}
         <div className="mb-3">
-          <button type="button" className="btn btn-primary me-2" onClick={addAnotherUser}>Add Another User</button>
+          <button type="button" className="btn btn-primary me-2" style={{backgroundColor:"#f0f0f0", color:"black", border: "1px solid black", marginRight: "20px"}} onClick={addAnotherUser}>Add Another User</button>
           <button type="submit" className="btn btn-success">Add Project</button>
         </div>
       </form>
