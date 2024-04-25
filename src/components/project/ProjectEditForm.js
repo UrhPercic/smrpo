@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { getData } from "../../db/realtimeDatabase";
+import { updateData } from "../../db/realtimeDatabase";
+
+
 // Ensure Bootstrap CSS is imported in your main file, e.g., index.js or App.js
 
 const ProjectEditForm = () => {
@@ -16,6 +19,8 @@ const ProjectEditForm = () => {
   const [originalName, setOriginalName] = useState("");
   const [userRole, setUserRole] = useState("Unknown");
   const [project, setProject] = useState({users: []});
+  const navigate = useNavigate();
+
 
   const getCurrentUserRole = (users) => {
     const userId = localStorage.getItem("userId");
@@ -34,51 +39,62 @@ const ProjectEditForm = () => {
 
 
   useEffect(() => {
-    Promise.all([
-      fetch(`http://localhost:3001/api/projects/${projectId}`).then(res => res.json()),
-      fetch("http://localhost:3001/api/users").then(res => res.json())
-    ]).then(([projectData, usersData]) => {
-      if (projectData && typeof projectData.users === 'object' && !Array.isArray(projectData.users)) {
-        // Convert users object into an array
-        setOriginalName(projectData.name);
-        const users = Object.keys(projectData.users).map((key) => ({
-          id: key,
-        }));
-        const usersArray = Object.entries(projectData.users).map(([userId, roles]) => {
-          const foundUser = usersData.find(u => u.id === userId);
-          return {
-            userId: userId,
-            name: foundUser ? foundUser.name : "Unknown User",
-            roles: roles,
+      Promise.all([
+        //fetch(`http://localhost:3001/api/projects/${projectId}`).then(res => res.json()),
+        fetch(`https://smrpo-acd88-default-rtdb.europe-west1.firebasedatabase.app/projects/${projectId}.json`).then((response) => response.json()),
+        fetch("https://smrpo-acd88-default-rtdb.europe-west1.firebasedatabase.app/users.json")
+        .then(res => res.json())
+        .then((users) => {
+          const usersArray = Object.keys(users).map(key => ({
+            id: key,
+            ...users[key]
+          }));
+          console.log(usersArray);
+          return usersArray;
+        })
+      ]).then(([projectData, usersData]) => {
+        if (projectData && typeof projectData.users === 'object' && !Array.isArray(projectData.users)) {
+          // Convert users object into an array
+          setOriginalName(projectData.name);
+          const users = Object.keys(projectData.users).map((key) => ({
+            id: key,
+          }));
+          const usersArray = Object.entries(projectData.users).map(([userId, roles]) => {
+            const foundUser = usersData.find(u => u.id === userId);
+            return {
+              userId: userId,
+              name: foundUser ? foundUser.name : "Unknown User",
+              roles: roles,
+            };
+          });
+          setProjectData({
+            name: projectData.name,
+            description: projectData.description,
+            users: usersArray,
+          });
+          const fetchProject = async () => {
+            const fetchedProject = await getData(`/projects/${projectId}`);
+            if (fetchedProject) {
+              const users = Object.keys(fetchedProject.users).map((key) => ({
+                id: key,
+                ...fetchedProject.users[key],
+              }));
+              setProject({ ...fetchedProject, users }); // Merge existing properties with initialized users array
+              const currentUserRole = getCurrentUserRole(users); // Pass users array to getCurrentUserRole
+              setUserRole(currentUserRole);
+            }
           };
-        });
-        setProjectData({
-          name: projectData.name,
-          description: projectData.description,
-          users: usersArray,
-        });
-        const fetchProject = async () => {
-          const fetchedProject = await getData(`/projects/${projectId}`);
-          if (fetchedProject) {
-            const users = Object.keys(fetchedProject.users).map((key) => ({
-              id: key,
-              ...fetchedProject.users[key],
-            }));
-            setProject({ ...fetchedProject, users }); // Merge existing properties with initialized users array
-            const currentUserRole = getCurrentUserRole(users); // Pass users array to getCurrentUserRole
-            setUserRole(currentUserRole);
-          }
-        };
-        fetchProject();
-      } else {
-        console.error('Unexpected structure for users:', projectData.users);
-      }
-  
-      setAvailableUsers(usersData);
-    }).catch(error => {
-      console.error("Error fetching data:", error);
-    });
-  }, [projectId]);
+          fetchProject();
+        } else {
+          console.error('Unexpected structure for users:', projectData.users);
+        }
+    
+        setAvailableUsers(usersData);
+      }).catch(error => {
+        console.error("Error fetching data:", error);
+      });
+
+  }, []);
   
 
   
@@ -194,26 +210,21 @@ const ProjectEditForm = () => {
         }, {})
       };
   
-      const response = await fetch(`http://localhost:3001/api/projects/update/${projectId}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedProjectData),
-      });
-  
-      if (response.ok) {
-        
+      try{
+        await updateData(`/projects/${projectId}`, updatedProjectData);
         alert("Project updated successfully");
-      } else {
-        const errorData = await response.json();
-        alert("Failed to update project: " + errorData.error);
+        navigate(`/projects/listSprints/${projectId}`)
+      }catch (error){
+        console.error("Error updating project:", error);
+        alert("An error occurred while updating the project.");
       }
-    } catch (error) {
-      console.error("Error updating project:", error);
+
+    }catch (error){
+      console.error("Error updating project data:", error);
       alert("An error occurred while updating the project.");
-    }
+    };
+  
   };
-  
-  
 
   
 
@@ -248,7 +259,7 @@ const ProjectEditForm = () => {
         {projectData.users.map((user, index) => (
           <div key={index} className="d-flex justify-content-between align-items-center mb-2">
             <span>{`${user.name} (${user.roles.join(", ")})`}</span>
-            <button type="button" className="btn btn-danger btn-sm" onClick={() => removeUser(user.userId)}>Remove</button>
+            <button type="button" className="btn btn-danger btn-sm" style={{backgroundColor:"#f0f0f0", color:"black", border: "1px solid black", marginLeft: "20px"}} onClick={() => removeUser(user.userId)}>Remove</button>
           </div>
         ))}
 
@@ -281,20 +292,16 @@ const ProjectEditForm = () => {
         </div>
 
         {/* Button container for alignment */}
-        <div className="d-flex justify-content-start align-items-center">
-          <button type="button" className="btn btn-primary me-2" onClick={addNewUser}>Add User</button>
-          
-          {userRole === 'Scrum Master' ? (
-                        <>
-                        <button type="submit" className="btn btn-success">Update Project</button>
-                        
-                        </>
-                        ) : (
+        
+          <div className="d-flex justify-content-start align-items-center">
+            <button type="button" className="btn btn-primary me-2" style={{backgroundColor:"#f0f0f0", color:"black", border: "2px solid black", marginRight: "20px"}} onClick={addNewUser}>Add User</button>
+            {userRole === 'Scrum Master' && (
                           <>
-
+                          <button type="submit" className="btn btn-success" >Update Project</button>
                           </>
-                      )}
+        )}
         </div>
+        
 
       </form>
     </div>
