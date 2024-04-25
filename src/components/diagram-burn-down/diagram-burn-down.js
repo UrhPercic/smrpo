@@ -10,7 +10,7 @@ const DiagramBurnDown = () => {
   const [chartData, setChartData] = useState({
     planned: [],
     actual: [],
-    userStories: [],
+    dates: [],
   });
 
   useEffect(() => {
@@ -26,62 +26,88 @@ const DiagramBurnDown = () => {
         return;
       }
 
+      let totalPlanned = 0;
+      let totalActual = 0;
+
       const userStories = Object.entries(userStoriesData)
         .map(([id, userStory]) => ({ id, ...userStory }))
         .filter((userStory) => userStory.projectId === projectId);
 
-      const userStoriesWithTasks = userStories.map((userStory) => ({
-        ...userStory,
-        tasks: Object.entries(tasksData)
+      userStories.forEach((userStory) => {
+        const tasks = Object.entries(tasksData)
           .map(([taskId, task]) => ({ id: taskId, ...task }))
-          .filter((task) => task.user_story_id === userStory.id),
-      }));
+          .filter((task) => task.user_story_id === userStory.id);
 
-      const chartData = userStoriesWithTasks.map((userStory) => {
-        const plannedTime = userStory.tasks.reduce((total, task) => {
-          return total + (parseInt(task.projected_time) || 0);
-        }, 0);
+        userStory.tasks = tasks;
 
-        const actualTime = userStory.tasks.reduce((total, task) => {
-          const taskLogs = Object.values(timeLogsData).filter(
-            (log) => log.task_id === task.id
-          );
-          return (
-            total +
-            taskLogs.reduce((taskTotal, log) => {
+        userStory.planned = tasks.reduce(
+          (sum, task) => sum + (parseInt(task.projected_time) || 0),
+          0
+        );
+        userStory.actual =
+          tasks.reduce((sum, task) => {
+            const logs = Object.values(timeLogsData).filter(
+              (log) => log.task_id === task.id
+            );
+            const time = logs.reduce((sum, log) => {
               const parts = log.time_spent.split(":");
               return (
-                taskTotal +
+                sum +
                 (parseInt(parts[0]) * 3600 +
                   parseInt(parts[1]) * 60 +
                   parseInt(parts[2]))
               );
-            }, 0)
-          );
-        }, 0);
+            }, 0);
+            return sum + time;
+          }, 0) / 3600; // Convert to hours
 
-        return {
-          userStoryId: userStory.id,
-          name: userStory.userStoryName,
-          planned: plannedTime,
-          actual: actualTime / 3600,
-        };
+        totalPlanned += userStory.planned;
+        totalActual += userStory.actual;
+      });
+
+      // Generate 15 random dates within the current month
+      const currentDate = new Date();
+      const currentYear = currentDate.getFullYear();
+      const currentMonth = currentDate.getMonth();
+      let dates = new Set();
+      while (dates.size < 15) {
+        const day =
+          Math.floor(
+            Math.random() * new Date(currentYear, currentMonth + 1, 0).getDate()
+          ) + 1;
+        dates.add(
+          new Date(currentYear, currentMonth, day).toISOString().slice(0, 10)
+        );
+      }
+      const sortedDates = Array.from(dates).sort();
+
+      // Distribute total times across the dates
+      const plannedPerDate = totalPlanned / 15;
+      const actualPerDate = totalActual / 15;
+      const planned = sortedDates.map(
+        (_, index) => totalPlanned - plannedPerDate * index
+      );
+      // Calculate the remaining actual work for each date
+      const actualRemaining = sortedDates.map((_, index) => {
+        // Total actual work done until this date
+        const actualWorkDone = actualPerDate * index;
+        // Remaining work is the initial total planned minus the actual work done
+        return totalPlanned - actualWorkDone;
       });
 
       setChartData({
-        planned: chartData.map((data) => data.planned),
-        actual: chartData.map((data) => Math.round(data.actual * 100) / 100),
-        userStories: chartData.map((data) => data.name),
+        planned: planned.map(Math.round),
+        actual: actualRemaining.map((value) => Math.round(value * 100) / 100),
+        dates: sortedDates,
       });
     };
 
     fetchData();
   }, [projectId]);
 
-  console.log(chartData);
   const options = {
-    title: { text: "User Story Task Burn-Down Chart" },
-    xAxis: { categories: chartData.userStories },
+    title: { text: "Project Burn-Down Chart" },
+    xAxis: { categories: chartData.dates },
     yAxis: { title: { text: "Hours of Effort" } },
     series: [
       {
