@@ -137,7 +137,7 @@ const ProductBacklogTab = () => {
                   console.error("Failed to fetch sprints:", error);
                   setActiveProjectSprints([]); // Fallback in case of error
                   //setIsLoading(false); // Data loading failed
-              });
+              }); 
         };
 
         const fetchhandleSprints = async () => {
@@ -159,7 +159,7 @@ const ProductBacklogTab = () => {
                         const endDateTime = new Date(sprint.endTime);
                         return currentDateTime >= endDateTime})
                       .filter((sprint) => sprint.storiesHandled == false);
-
+                      
                   setHandlingSprints(sprintsArray);
                   //setIsLoading(false); // Data loaded
               })
