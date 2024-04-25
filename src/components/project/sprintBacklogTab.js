@@ -156,8 +156,8 @@ const SprintBacklogTab = () => {
 
     if (
       source.droppableId === "Unassigned" &&
-      destination.droppableId === "Assigned"
-
+      destination.droppableId === "Assigned" &&
+      userRole === "Development Team Member"
     ) {
       setAssignedId(userId);
       if (!assignedUserName) {
