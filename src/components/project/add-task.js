@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import "./project.css";
 import StoryTasks from "./userStory-tasks/StoryTasks";
 
-const AddTask = ({ projectId, story }) => {
+const AddTask = ({ projectId, story, userRole }) => {
   const navigate = useNavigate();
   const [taskData, setTaskData] = useState({
     name: "",
@@ -38,6 +38,15 @@ const AddTask = ({ projectId, story }) => {
       console.error("woops:", error);
     }
   };
+
+  // Check if user is Project Owner before rendering the form
+  if (userRole === "Project Owner") {
+    return (
+      <div>
+        <p>Only Project Owners can add tasks.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="container">

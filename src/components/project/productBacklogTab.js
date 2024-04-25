@@ -137,7 +137,7 @@ const ProductBacklogTab = () => {
                   console.error("Failed to fetch sprints:", error);
                   setActiveProjectSprints([]); // Fallback in case of error
                   //setIsLoading(false); // Data loading failed
-              }); 
+              });
         };
 
         const fetchhandleSprints = async () => {
@@ -159,7 +159,7 @@ const ProductBacklogTab = () => {
                         const endDateTime = new Date(sprint.endTime);
                         return currentDateTime >= endDateTime})
                       .filter((sprint) => sprint.storiesHandled == false);
-                      
+
                   setHandlingSprints(sprintsArray);
                   //setIsLoading(false); // Data loaded
               })
@@ -369,17 +369,21 @@ const ProductBacklogTab = () => {
                                                     </>
                                                 )}
                                             </p>
-                                            {typeof storyItem.commentOnReturn != "undefined" && 
-                                            <p>
-                                              <span className="comment-on-return"><b>Comment: </b>{storyItem.commentOnReturn}</span>
-                                            </p>
+                                            {typeof storyItem.commentOnReturn != "undefined" &&
+                                                <p>
+                                                    <span className="comment-on-return"><b>Comment: </b>{storyItem.commentOnReturn}</span>
+                                                </p>
                                             }
+                                            {userRole !== "Unknown" &&
+                                                userRole !== "Project Owner" && (
+
                                             <button
                                                 className="add-task-button"
                                                 onClick={() => handleAddTask(storyItem)}
                                             >
                                                 Add Task
                                             </button>
+                                                )}
                                             {userRole !== "Unknown" &&
                                                 userRole !== "Project Owner" && (
                                                     <button
