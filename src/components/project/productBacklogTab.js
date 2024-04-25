@@ -369,17 +369,21 @@ const ProductBacklogTab = () => {
                                                     </>
                                                 )}
                                             </p>
-                                            {typeof storyItem.commentOnReturn != "undefined" && 
-                                            <p>
-                                              <span className="comment-on-return"><b>Comment: </b>{storyItem.commentOnReturn}</span>
-                                            </p>
+                                            {typeof storyItem.commentOnReturn != "undefined" &&
+                                                <p>
+                                                    <span className="comment-on-return"><b>Comment: </b>{storyItem.commentOnReturn}</span>
+                                                </p>
                                             }
+                                            {userRole !== "Unknown" &&
+                                                userRole !== "Project Owner" && (
+
                                             <button
                                                 className="add-task-button"
                                                 onClick={() => handleAddTask(storyItem)}
                                             >
                                                 Add Task
                                             </button>
+                                                )}
                                             {userRole !== "Unknown" &&
                                                 userRole !== "Project Owner" && (
                                                     <button
