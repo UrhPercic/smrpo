@@ -13,9 +13,24 @@ const SprintBacklogTab = () => {
   const [users, setUsers] = useState({});
   const [assignedUserName, setAssignedUserName] = useState("");
   const [assignedId, setAssignedId] = useState("");
-
+  const [userRole, setUserRole] = useState("Unknown");
   const userId = localStorage.getItem("userId");
-  console.log("USER", userId)
+
+
+  const getCurrentUserRole = (users) => {
+    const userId = localStorage.getItem("userId");
+    const userRolesMap = users.reduce((acc, user) => {
+      const roleName = user[0];
+      const userId = user.id;
+      acc[userId] = roleName;
+      return acc;
+    }, {});
+    if (userRolesMap[userId]) {
+      console.log("User role found:", userRolesMap[userId]);
+      return userRolesMap[userId];
+    }
+    return "Unknown";
+  };
 
   useEffect(() => {
     const storedAssignedUserName = localStorage.getItem("assignedUserName");
@@ -27,8 +42,13 @@ const SprintBacklogTab = () => {
     const fetchProject = async () => {
       const fetchedProject = await getData(`/projects/${projectId}`);
       if (fetchedProject) {
-        console.log("Fetched project:", fetchedProject);
-        setProject(fetchedProject);
+        const users = Object.keys(fetchedProject.users).map((key) => ({
+          id: key,
+          ...fetchedProject.users[key],
+        }));
+        setProject({ ...fetchedProject, users }); // Merge existing properties with initialized users array
+        const currentUserRole = getCurrentUserRole(users); // Pass users array to getCurrentUserRole
+        setUserRole(currentUserRole);
       }
     };
 
@@ -143,16 +163,17 @@ const SprintBacklogTab = () => {
       if (!assignedUserName) {
         const userName = getUserName(userId);
         localStorage.setItem("assignedUserName", userName);
-        
+
         setAssignedUserName(userName);
         setAssignedId(userId);
-        console.log("0000", userId )
+        console.log("0000", userId)
+        console.error("USER ROLE", userRole);
       }
     }
 
     if (source.droppableId === "Assigned" && destination.droppableId === "Unassigned") {
       console.log("1111", assignedId)
-      console.log("2222", userId )
+      console.log("2222", userId)
       if (assignedId === userId) {
         localStorage.removeItem("assignedUserName");
         localStorage.removeItem("assignedUserId");
@@ -164,7 +185,7 @@ const SprintBacklogTab = () => {
         return; // Prevent the task from being moved
       }
     }
-    
+
 
 
     // Check if task moved from Assigned to Active
