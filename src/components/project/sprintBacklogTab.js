@@ -10,15 +10,61 @@ const SprintBacklogTab = () => {
   const [project, setProject] = useState({ users: [] });
   const [task, setTask] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [users, setUsers] = useState({});
+  const [assignedUserName, setAssignedUserName] = useState("");
+  const [assignedId, setAssignedId] = useState("");
+  const [userRole, setUserRole] = useState("Unknown");
+  const userId = localStorage.getItem("userId");
+
+
+  const getCurrentUserRole = (users) => {
+    const userId = localStorage.getItem("userId");
+    const userRolesMap = users.reduce((acc, user) => {
+      const roleName = user[0];
+      const userId = user.id;
+      acc[userId] = roleName;
+      return acc;
+    }, {});
+    if (userRolesMap[userId]) {
+      console.log("User role found:", userRolesMap[userId]);
+      return userRolesMap[userId];
+    }
+    return "Unknown";
+  };
 
   useEffect(() => {
+    const storedAssignedUserName = localStorage.getItem("assignedUserName");
+    if (storedAssignedUserName) {
+      setAssignedUserName(storedAssignedUserName);
+      setAssignedId(userId);
+
+    }
     const fetchProject = async () => {
       const fetchedProject = await getData(`/projects/${projectId}`);
       if (fetchedProject) {
-        console.log("Fetched project:", fetchedProject);
-        setProject(fetchedProject);
+        const users = Object.keys(fetchedProject.users).map((key) => ({
+          id: key,
+          ...fetchedProject.users[key],
+        }));
+        setProject({ ...fetchedProject, users }); // Merge existing properties with initialized users array
+        const currentUserRole = getCurrentUserRole(users); // Pass users array to getCurrentUserRole
+        setUserRole(currentUserRole);
       }
     };
+
+    const fetchUsers = async () => {
+      fetch('https://smrpo-acd88-default-rtdb.europe-west1.firebasedatabase.app/users.json')
+        .then(response => response.json())
+        .then(data => {
+          const formattedUsers = Object.keys(data).reduce((acc, key) => {
+            acc[key] = data[key];
+            return acc;
+          }, {});
+          setUsers(formattedUsers);
+        })
+        .catch(error => console.error("Failed to fetch users:", error));
+    };
+
 
     const fetchTasks = async () => {
       var storiesArray = [];
@@ -71,6 +117,7 @@ const SprintBacklogTab = () => {
     };
 
     fetchProject();
+    fetchUsers();
     fetchTasks();
   }, []);
 
@@ -81,6 +128,11 @@ const SprintBacklogTab = () => {
   const handleEditStory = (storyId) => {
     navigate(`/projects/edit-userStory/${storyId}`);
   };
+
+  const getUserName = (userId) => {
+    return users[userId] ? users[userId].name : 'Unknown User';
+  };
+  //console.log("User Name:", getUserName(userId));
 
   const onDragEnd = async (result) => {
     const { source, destination, draggableId } = result;
@@ -100,6 +152,41 @@ const SprintBacklogTab = () => {
     console.log(
       `Item ${draggableId} moved from ${source.droppableId} to ${destination.droppableId}`
     );
+
+
+    if (
+      source.droppableId === "Unassigned" &&
+      destination.droppableId === "Assigned" &&
+      userRole === "Development Team Member"
+    ) {
+      setAssignedId(userId);
+      if (!assignedUserName) {
+        const userName = getUserName(userId);
+        localStorage.setItem("assignedUserName", userName);
+
+        setAssignedUserName(userName);
+        setAssignedId(userId);
+        console.log("0000", userId)
+        console.error("USER ROLE", userRole);
+      }
+    }
+
+    if (source.droppableId === "Assigned" && destination.droppableId === "Unassigned") {
+      console.log("1111", assignedId)
+      console.log("2222", userId)
+      if (assignedId === userId) {
+        localStorage.removeItem("assignedUserName");
+        localStorage.removeItem("assignedUserId");
+        setAssignedUserName("");
+        setAssignedId("");
+        // Logic to update the task status goes here
+      } else {
+        console.log("You are not allowed to move this task.");
+        return; // Prevent the task from being moved
+      }
+    }
+
+
 
     // Check if task moved from Assigned to Active
     if (
@@ -194,9 +281,8 @@ const SprintBacklogTab = () => {
           <div
             ref={provided.innerRef}
             {...provided.droppableProps}
-            className={`sub-column-content ${
-              snapshot.isDraggingOver ? "droppable-over" : ""
-            }`}
+            className={`sub-column-content ${snapshot.isDraggingOver ? "droppable-over" : ""
+              }`}
           >
             {tasks
               .filter((item) => item.status === status)
@@ -211,16 +297,15 @@ const SprintBacklogTab = () => {
                       ref={provided.innerRef}
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
-                      className={`task-section ${
-                        snapshot.isDragging ? "dragging-task" : ""
-                      }`}
+                      className={`task-section ${snapshot.isDragging ? "dragging-task" : ""
+                        }`}
                     >
                       <h4>{taskItem.name}</h4>
                       <p className="description-preview">
                         {taskItem.description}
                       </p>
                       <p className="assigned-to">
-                        Assigned to: {taskItem.assignedTo}
+                        Assigned to: {assignedUserName}
                       </p>
                       <p className="time-estimate">
                         Time estimate: {taskItem.projected_time}
