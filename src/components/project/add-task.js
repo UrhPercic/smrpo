@@ -12,6 +12,7 @@ const AddTask = ({ projectId, story }) => {
     projected_time: 0, // Change to integer type
     user_story_id: story ? story.id : "",
     created_at: "",
+    status: "Unassigned"
   });
 
   useEffect(() => {
